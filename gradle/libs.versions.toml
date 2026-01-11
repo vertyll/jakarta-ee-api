@@ -1,0 +1,151 @@
+[versions]
+# Plugins
+pmd = "7.20.0"
+errorprone-plugin = "4.3.0"
+nullaway-plugin = "2.3.0"
+spotless = "8.1.0"
+
+# SpotBugs and FindSecBugs
+spotbugs = "6.4.8"
+spotbugs-annotations = "4.9.8"
+findsecbugs = "1.14.0"
+
+# Java & Jakarta EE
+jakarta-validation = "3.1.1"
+jakarta-cdi = "4.1.0"
+jakarta-jsonb = "3.0.1"
+jakarta-nosql = "1.0.1"
+jakarta-jaxrs = "4.0.0"
+jakarta-security = "4.0.0"
+jakarta-servlet = "6.1.0"
+
+# Bean Validation Implementation
+hibernate-validator = "8.0.3.Final"
+expressly = "6.0.0"
+
+# Logging
+slf4j = "2.0.17"
+logback = "1.5.24"
+
+# MongoDB
+mongodb-driver = "5.6.2"
+
+# JWT
+jjwt = "0.13.0"
+
+# Lombok
+lombok = "1.18.42"
+
+# MapStruct
+mapstruct = "1.6.3"
+
+# Lombok & MapStruct Binding
+lombok-mapstruct-binding = "0.2.0"
+
+# Guava
+guava = "33.5.0-jre"
+guava-beta-checker = "1.0"
+
+# Testing
+junit = "5.11.4"
+mockito = "5.14.2"
+assertj = "3.27.3"
+rest-assured = "5.5.0"
+
+# Code Quality
+google-java-format = "1.33.0"
+jspecify = "1.0.0"
+errorprone = "2.45.0"
+nullaway = "0.12.15"
+
+[libraries]
+# SpotBugs & FindSecBugs
+spotbugs-annotations = { module = "com.github.spotbugs:spotbugs-annotations", version.ref = "spotbugs-annotations" }
+findsecbugs = { module = "com.h3xstream.findsecbugs:findsecbugs-plugin", version.ref = "findsecbugs" }
+
+# Jakarta EE
+jakarta-validation = { module = "jakarta.validation:jakarta.validation-api", version.ref = "jakarta-validation" }
+jakarta-cdi = { module = "jakarta.enterprise:jakarta.enterprise.cdi-api", version.ref = "jakarta-cdi" }
+jakarta-jsonb = { module = "jakarta.json.bind:jakarta.json.bind-api", version.ref = "jakarta-jsonb" }
+jakarta-nosql = { module = "jakarta.nosql:jakarta.nosql-api", version.ref = "jakarta-nosql" }
+jakarta-jaxrs = { module = "jakarta.ws.rs:jakarta.ws.rs-api", version.ref = "jakarta-jaxrs" }
+jakarta-security = { module = "jakarta.security.enterprise:jakarta.security.enterprise-api", version.ref = "jakarta-security" }
+jakarta-servlet = { module = "jakarta.servlet:jakarta.servlet-api", version.ref = "jakarta-servlet" }
+
+# Bean Validation Implementation
+hibernate-validator = { module = "org.hibernate.validator:hibernate-validator", version.ref = "hibernate-validator" }
+expressly = { module = "org.glassfish.expressly:expressly", version.ref = "expressly" }
+
+# Logging
+slf4j-api = { module = "org.slf4j:slf4j-api", version.ref = "slf4j" }
+logback-classic = { module = "ch.qos.logback:logback-classic", version.ref = "logback" }
+
+# MongoDB
+mongodb-driver-sync = { module = "org.mongodb:mongodb-driver-sync", version.ref = "mongodb-driver" }
+
+# JWT
+jjwt-api = { module = "io.jsonwebtoken:jjwt-api", version.ref = "jjwt" }
+jjwt-impl = { module = "io.jsonwebtoken:jjwt-impl", version.ref = "jjwt" }
+jjwt-jackson = { module = "io.jsonwebtoken:jjwt-jackson", version.ref = "jjwt" }
+
+# Lombok
+lombok = { module = "org.projectlombok:lombok", version.ref = "lombok" }
+lombok-mapstruct-binding = { module = "org.projectlombok:lombok-mapstruct-binding", version.ref = "lombok-mapstruct-binding" }
+
+# MapStruct
+mapstruct = { module = "org.mapstruct:mapstruct", version.ref = "mapstruct" }
+mapstruct-processor = { module = "org.mapstruct:mapstruct-processor", version.ref = "mapstruct" }
+
+# Testing
+junit-api = { module = "org.junit.jupiter:junit-jupiter-api", version.ref = "junit" }
+junit-engine = { module = "org.junit.jupiter:junit-jupiter-engine", version.ref = "junit" }
+junit-params = { module = "org.junit.jupiter:junit-jupiter-params", version.ref = "junit" }
+mockito-core = { module = "org.mockito:mockito-core", version.ref = "mockito" }
+mockito-junit = { module = "org.mockito:mockito-junit-jupiter", version.ref = "mockito" }
+assertj-core = { module = "org.assertj:assertj-core", version.ref = "assertj" }
+rest-assured = { module = "io.rest-assured:rest-assured", version.ref = "rest-assured" }
+
+# Code Quality
+jspecify = { module = "org.jspecify:jspecify", version.ref = "jspecify" }
+errorprone-core = { module = "com.google.errorprone:error_prone_core", version.ref = "errorprone" }
+nullaway = { module = "com.uber.nullaway:nullaway", version.ref = "nullaway" }
+guava = { module = "com.google.guava:guava", version.ref = "guava" }
+guava-beta-checker = { module = "com.google.guava:guava-beta-checker", version.ref = "guava-beta-checker" }
+
+[plugins]
+spotless = { id = "com.diffplug.spotless", version.ref = "spotless" }
+errorprone = { id = "net.ltgt.errorprone", version.ref = "errorprone-plugin" }
+nullaway = { id = "net.ltgt.nullaway", version.ref = "nullaway-plugin" }
+spotbugs = { id = "com.github.spotbugs", version.ref = "spotbugs" }
+
+[bundles]
+
+jakarta = [
+    "jakarta-validation",
+    "jakarta-cdi",
+    "jakarta-jsonb",
+    "jakarta-nosql",
+    "jakarta-jaxrs",
+    "jakarta-security",
+    "jakarta-servlet"
+]
+
+jjwt = [
+    "jjwt-api",
+    "jjwt-impl",
+    "jjwt-jackson"
+]
+
+mapstruct-processors = [
+    "mapstruct-processor",
+    "lombok-mapstruct-binding"
+]
+
+testing = [
+    "junit-api",
+    "junit-params",
+    "mockito-core",
+    "mockito-junit",
+    "assertj-core",
+    "rest-assured"
+]
