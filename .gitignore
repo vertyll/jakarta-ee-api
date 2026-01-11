@@ -9,6 +9,12 @@ build/
 !**/src/test/**/build/
 .kotlin
 
+### Maven ###
+target/
+!.mvn/wrapper/maven-wrapper.jar
+!**/src/main/**/target/
+!**/src/test/**/target/
+
 ### IntelliJ IDEA ###
 .idea
 *.iws
@@ -43,9 +49,3 @@ bin/
 ### OS ###
 .DS_Store
 Thumbs.db
-
-### Environment variables ###
-.env
-.env.*
-!.env.example
-*.env
