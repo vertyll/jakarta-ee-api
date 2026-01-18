@@ -168,13 +168,12 @@ subprojects {
         maxParallelForks = (Runtime.getRuntime().availableProcessors() / 2).coerceAtLeast(1)
 
         testLogging {
-            events("passed", "skipped", "failed", "standardOut", "standardError")
+            events("standardOut", "standardError")
             showStandardStreams = false
             showExceptions = true
             showCauses = true
             showStackTraces = true
             exceptionFormat = org.gradle.api.tasks.testing.logging.TestExceptionFormat.FULL
-            displayGranularity = 2
         }
 
         val ansiReset = "\u001B[0m"
