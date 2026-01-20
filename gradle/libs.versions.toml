@@ -2,7 +2,7 @@
 # Plugins
 pmd = "7.20.0"
 errorprone-plugin = "4.3.0"
-nullaway-plugin = "2.3.0"
+nullaway-plugin = "2.4.0"
 spotless = "8.1.0"
 
 # SpotBugs and FindSecBugs
@@ -56,7 +56,7 @@ rest-assured = "5.5.0"
 google-java-format = "1.33.0"
 jspecify = "1.0.0"
 errorprone = "2.45.0"
-nullaway = "0.12.15"
+nullaway = "0.13.0"
 
 [libraries]
 # SpotBugs & FindSecBugs
