@@ -144,7 +144,7 @@ subprojects {
         options.compilerArgs.add("-parameters")
 
         options.errorprone {
-            isEnabled.set(true)
+            enabled.set(true)
 
             check("NullAway", net.ltgt.gradle.errorprone.CheckSeverity.ERROR)
             option("NullAway:OnlyNullMarked", "true")
