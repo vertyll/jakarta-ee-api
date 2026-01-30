@@ -37,6 +37,7 @@
         <exclude name="ExcessiveImports"/>
         <exclude name="TooManyFields"/>
         <exclude name="LoosePackageCoupling"/>
+        <exclude name="PublicMemberInNonPublicType"/>
     </rule>
 
     <!-- Documentation -->

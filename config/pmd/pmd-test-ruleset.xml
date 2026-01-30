@@ -38,6 +38,7 @@
         <exclude name="CouplingBetweenObjects"/>
         <exclude name="LoosePackageCoupling"/>
         <exclude name="TooManyFields"/>
+        <exclude name="PublicMemberInNonPublicType"/>
     </rule>
 
     <!-- Documentation -->
