@@ -42,7 +42,7 @@ public class MongoDBProducer {
     @Produces
     @ApplicationScoped
     public MongoDatabase createMongoDatabase(MongoClient mongoClient) {
-        String databaseName = System.getenv().getOrDefault("MONGODB_DATABASE", "airquality");
+        String databaseName = System.getenv().getOrDefault("MONGODB_DATABASE", "exampledb");
 
         return mongoClient.getDatabase(databaseName);
     }
