@@ -1,4 +1,4 @@
-rootProject.name = "jakarta-ee-base-api"
+rootProject.name = "jakarta-ee-api"
 
 include(
     "modules:common",
