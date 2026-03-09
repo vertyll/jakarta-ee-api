@@ -1,8 +1,8 @@
-package com.vertyll.jakartaeebaseapi.common.exception.handler;
+package com.vertyll.jakartaeeapi.common.exception.handler;
 
 import lombok.extern.slf4j.Slf4j;
 
-import com.vertyll.jakartaeebaseapi.common.response.ApiResponse;
+import com.vertyll.jakartaeeapi.common.response.ApiResponse;
 
 import jakarta.ws.rs.WebApplicationException;
 import jakarta.ws.rs.core.Context;

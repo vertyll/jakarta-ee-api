@@ -1,13 +1,13 @@
-package com.vertyll.jakartaeebaseapi.common.exception.handler;
+package com.vertyll.jakartaeeapi.common.exception.handler;
 
 import java.util.Map;
 
 import lombok.extern.slf4j.Slf4j;
 
-import com.vertyll.jakartaeebaseapi.common.exception.BaseBusinessException;
-import com.vertyll.jakartaeebaseapi.common.exception.HttpStatusProvider;
-import com.vertyll.jakartaeebaseapi.common.exception.ValidationErrorProvider;
-import com.vertyll.jakartaeebaseapi.common.response.ApiResponse;
+import com.vertyll.jakartaeeapi.common.exception.BaseBusinessException;
+import com.vertyll.jakartaeeapi.common.exception.HttpStatusProvider;
+import com.vertyll.jakartaeeapi.common.exception.ValidationErrorProvider;
+import com.vertyll.jakartaeeapi.common.response.ApiResponse;
 
 import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.Response;

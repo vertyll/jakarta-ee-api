@@ -1,4 +1,4 @@
-package com.vertyll.jakartaeebaseapi.common.exception;
+package com.vertyll.jakartaeeapi.common.exception;
 
 import java.util.Map;
 

@@ -1,4 +1,4 @@
-package com.vertyll.jakartaeebaseapi.common.response;
+package com.vertyll.jakartaeeapi.common.response;
 
 import java.time.LocalDateTime;
 

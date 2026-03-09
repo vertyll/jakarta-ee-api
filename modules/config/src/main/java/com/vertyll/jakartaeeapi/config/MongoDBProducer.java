@@ -1,4 +1,4 @@
-package com.vertyll.jakartaeebaseapi.config;
+package com.vertyll.jakartaeeapi.config;
 
 import org.bson.codecs.configuration.CodecRegistries;
 import org.bson.codecs.configuration.CodecRegistry;

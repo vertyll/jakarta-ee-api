@@ -1,4 +1,4 @@
 @NullMarked
-package com.vertyll.jakartaeebaseapi.common;
+package com.vertyll.jakartaeeapi.config;
 
 import org.jspecify.annotations.NullMarked;
