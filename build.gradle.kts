@@ -187,49 +187,54 @@ subprojects {
         val crossMark = "✗"
         val skipMark = "⊘"
 
-        afterTest(KotlinClosure2({ desc: TestDescriptor, result: TestResult ->
-            val indicator = when (result.resultType) {
-                TestResult.ResultType.SUCCESS -> "$ansiGreen$checkMark$ansiReset"
-                TestResult.ResultType.FAILURE -> "$ansiRed$crossMark$ansiReset"
-                TestResult.ResultType.SKIPPED -> "$ansiYellow$skipMark$ansiReset"
-                else -> "?"
-            }
-            val duration = result.endTime - result.startTime
-            println("  $indicator ${desc.className} > ${desc.name} $ansiCyan(${duration}ms)$ansiReset")
-        }))
+        addTestListener(object : TestListener {
+            override fun beforeSuite(desc: TestDescriptor) {}
+            override fun beforeTest(desc: TestDescriptor) {}
 
-        afterSuite(KotlinClosure2({ desc: TestDescriptor, result: TestResult ->
-            if (desc.parent == null) {
-                val total = result.testCount
-                val passed = result.successfulTestCount
-                val failed = result.failedTestCount
-                val skipped = result.skippedTestCount
-                val duration = result.endTime - result.startTime
-
-                println()
-                println("$ansiBold═══════════════════════════════════════════════════════════════$ansiReset")
-                println("$ansiBold                        TEST RESULTS                        $ansiReset")
-                println("$ansiBold═══════════════════════════════════════════════════════════════$ansiReset")
-                println()
-                println("  Total:   $ansiBold$total$ansiReset tests")
-                println("  Passed:  $ansiGreen$ansiBold$passed$ansiReset $ansiGreen$checkMark$ansiReset")
-                println("  Failed:  $ansiRed$ansiBold$failed$ansiReset ${if (failed > 0) "$ansiRed$crossMark$ansiReset" else ""}")
-                println("  Skipped: $ansiYellow$ansiBold$skipped$ansiReset ${if (skipped > 0) "$ansiYellow$skipMark$ansiReset" else ""}")
-                println()
-                println("  Duration: $ansiCyan${duration}ms$ansiReset")
-                println()
-
-                val statusColor = when (result.resultType) {
-                    TestResult.ResultType.SUCCESS -> ansiGreen
-                    TestResult.ResultType.FAILURE -> ansiRed
-                    else -> ansiYellow
+            override fun afterTest(desc: TestDescriptor, result: TestResult) {
+                val indicator = when (result.resultType) {
+                    TestResult.ResultType.SUCCESS -> "$ansiGreen$checkMark$ansiReset"
+                    TestResult.ResultType.FAILURE -> "$ansiRed$crossMark$ansiReset"
+                    TestResult.ResultType.SKIPPED -> "$ansiYellow$skipMark$ansiReset"
+                    else -> "?"
                 }
-                println("  Status: $statusColor$ansiBold${result.resultType}$ansiReset")
-                println()
-                println("$ansiBold═══════════════════════════════════════════════════════════════$ansiReset")
-                println()
+                val duration = result.endTime - result.startTime
+                println("  $indicator ${desc.className} > ${desc.name} $ansiCyan(${duration}ms)$ansiReset")
             }
-        }))
+
+            override fun afterSuite(desc: TestDescriptor, result: TestResult) {
+                if (desc.parent == null) {
+                    val total = result.testCount
+                    val passed = result.successfulTestCount
+                    val failed = result.failedTestCount
+                    val skipped = result.skippedTestCount
+                    val duration = result.endTime - result.startTime
+
+                    println()
+                    println("$ansiBold═══════════════════════════════════════════════════════════════$ansiReset")
+                    println("$ansiBold                        TEST RESULTS                        $ansiReset")
+                    println("$ansiBold═══════════════════════════════════════════════════════════════$ansiReset")
+                    println()
+                    println("  Total:   $ansiBold$total$ansiReset tests")
+                    println("  Passed:  $ansiGreen$ansiBold$passed$ansiReset $ansiGreen$checkMark$ansiReset")
+                    println("  Failed:  $ansiRed$ansiBold$failed$ansiReset ${if (failed > 0) "$ansiRed$crossMark$ansiReset" else ""}")
+                    println("  Skipped: $ansiYellow$ansiBold$skipped$ansiReset ${if (skipped > 0) "$ansiYellow$skipMark$ansiReset" else ""}")
+                    println()
+                    println("  Duration: $ansiCyan${duration}ms$ansiReset")
+                    println()
+
+                    val statusColor = when (result.resultType) {
+                        TestResult.ResultType.SUCCESS -> ansiGreen
+                        TestResult.ResultType.FAILURE -> ansiRed
+                        else -> ansiYellow
+                    }
+                    println("  Status: $statusColor$ansiBold${result.resultType}$ansiReset")
+                    println()
+                    println("$ansiBold═══════════════════════════════════════════════════════════════$ansiReset")
+                    println()
+                }
+            }
+        })
     }
 
     configure<com.diffplug.gradle.spotless.SpotlessExtension> {
