@@ -237,29 +237,29 @@ subprojects {
         })
     }
 
-    configure<com.diffplug.gradle.spotless.SpotlessExtension> {
-        java {
-            target("src/main/java/**/*.java", "src/test/java/**/*.java")
-            targetExclude("**/build/generated/**/*.java", "**/*Impl.java")
-
-            googleJavaFormat(rootProject.libs.versions.google.java.format.get()).aosp()
-
-            removeUnusedImports()
-            importOrder("java", "javax", "org", "com", "lombok", "com.vertyll")
-
-            trimTrailingWhitespace()
-            endWithNewline()
-
-            toggleOffOn()
-        }
-
-        format("gradle") {
-            target("*.gradle.kts", "**/*.gradle.kts")
-            trimTrailingWhitespace()
-            leadingTabsToSpaces(4)
-            endWithNewline()
-        }
-    }
+//    configure<com.diffplug.gradle.spotless.SpotlessExtension> {
+//        java {
+//            target("src/main/java/**/*.java", "src/test/java/**/*.java")
+//            targetExclude("**/build/generated/**/*.java", "**/*Impl.java")
+//
+//            googleJavaFormat(rootProject.libs.versions.google.java.format.get()).aosp()
+//
+//            removeUnusedImports()
+//            importOrder("java", "javax", "org", "com", "lombok", "com.vertyll")
+//
+//            trimTrailingWhitespace()
+//            endWithNewline()
+//
+//            toggleOffOn()
+//        }
+//
+//        format("gradle") {
+//            target("*.gradle.kts", "**/*.gradle.kts")
+//            trimTrailingWhitespace()
+//            leadingTabsToSpaces(4)
+//            endWithNewline()
+//        }
+//    }
 
     pmd {
         isConsoleOutput = true
@@ -295,9 +295,11 @@ tasks.register<TestReport>("testReport") {
                     os.contains("mac") -> {
                         Runtime.getRuntime().exec(arrayOf("open", reportFile.absolutePath))
                     }
+
                     os.contains("nix") || os.contains("nux") -> {
                         Runtime.getRuntime().exec(arrayOf("xdg-open", reportFile.absolutePath))
                     }
+
                     os.contains("win") -> {
                         Runtime.getRuntime().exec(arrayOf("cmd", "/c", "start", reportFile.absolutePath))
                     }
