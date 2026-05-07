@@ -1,19 +1,18 @@
 package com.vertyll.jakartaeeapi.common.exception;
 
-import lombok.Getter;
+import java.io.Serial;
+
 import org.jspecify.annotations.Nullable;
 
-import java.io.Serial;
+import lombok.Getter;
 
 @Getter
 public abstract class BaseBusinessException extends RuntimeException {
-    @Serial
-    private static final long serialVersionUID = 1L;
+    @Serial private static final long serialVersionUID = 1L;
 
     private final String messageKey;
 
-    @Nullable
-    private final transient Object[] args;
+    @Nullable private final transient Object[] args;
 
     protected BaseBusinessException(String messageKey) {
         super(messageKey);

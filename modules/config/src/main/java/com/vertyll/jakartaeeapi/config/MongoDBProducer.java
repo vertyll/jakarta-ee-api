@@ -1,16 +1,18 @@
 package com.vertyll.jakartaeeapi.config;
 
+import org.bson.codecs.configuration.CodecRegistries;
+import org.bson.codecs.configuration.CodecRegistry;
+import org.bson.codecs.pojo.PojoCodecProvider;
+
 import com.mongodb.ConnectionString;
 import com.mongodb.MongoClientSettings;
 import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoClients;
 import com.mongodb.client.MongoDatabase;
+
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.enterprise.inject.Disposes;
 import jakarta.enterprise.inject.Produces;
-import org.bson.codecs.configuration.CodecRegistries;
-import org.bson.codecs.configuration.CodecRegistry;
-import org.bson.codecs.pojo.PojoCodecProvider;
 
 @ApplicationScoped
 public class MongoDBProducer {
@@ -45,10 +47,7 @@ public class MongoDBProducer {
         return mongoClient.getDatabase(databaseName);
     }
 
-    public void closeMongoClient(
-            @Disposes
-            MongoClient mongoClient
-    ) {
+    public void closeMongoClient(@Disposes MongoClient mongoClient) {
         mongoClient.close();
     }
 }

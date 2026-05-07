@@ -1,20 +1,21 @@
 package com.vertyll.jakartaeeapi.common.exception.handler;
 
+import lombok.extern.slf4j.Slf4j;
+
 import com.vertyll.jakartaeeapi.common.response.ApiResponse;
+
 import jakarta.ws.rs.WebApplicationException;
 import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.UriInfo;
 import jakarta.ws.rs.ext.ExceptionMapper;
 import jakarta.ws.rs.ext.Provider;
-import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Provider
 public class GenericExceptionMapper implements ExceptionMapper<Exception> {
 
-    @Context
-    private UriInfo uriInfo;
+    @Context private UriInfo uriInfo;
 
     @Override
     public Response toResponse(Exception exception) {
@@ -28,8 +29,7 @@ public class GenericExceptionMapper implements ExceptionMapper<Exception> {
                     webEx.getMessage(),
                     Response.Status.fromStatusCode(webEx.getResponse().getStatus()),
                     null,
-                    path
-            );
+                    path);
         }
 
         // Log unexpected errors
@@ -40,7 +40,6 @@ public class GenericExceptionMapper implements ExceptionMapper<Exception> {
                 "An unexpected error occurred. Please try again later.",
                 Response.Status.INTERNAL_SERVER_ERROR,
                 null,
-                path
-        );
+                path);
     }
 }

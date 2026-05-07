@@ -1,6 +1,12 @@
 package com.vertyll.jakartaeeapi.common.exception.handler;
 
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+
+import lombok.extern.slf4j.Slf4j;
+
 import com.vertyll.jakartaeeapi.common.response.ApiResponse;
+
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
 import jakarta.ws.rs.core.Context;
@@ -8,17 +14,13 @@ import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.UriInfo;
 import jakarta.ws.rs.ext.ExceptionMapper;
 import jakarta.ws.rs.ext.Provider;
-import lombok.extern.slf4j.Slf4j;
-
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
 @Slf4j
 @Provider
-public class ConstraintViolationExceptionMapper implements ExceptionMapper<ConstraintViolationException> {
+public class ConstraintViolationExceptionMapper
+        implements ExceptionMapper<ConstraintViolationException> {
 
-    @Context
-    private UriInfo uriInfo;
+    @Context private UriInfo uriInfo;
 
     @Override
     public Response toResponse(ConstraintViolationException exception) {
@@ -34,7 +36,8 @@ public class ConstraintViolationExceptionMapper implements ExceptionMapper<Const
 
         log.warn("Validation failed at path: {} with {} violations", path, validationErrors.size());
 
-        return ApiResponse.buildResponse(null, "Validation failed", Response.Status.BAD_REQUEST, validationErrors, path);
+        return ApiResponse.buildResponse(
+                null, "Validation failed", Response.Status.BAD_REQUEST, validationErrors, path);
     }
 
     private String getFieldName(ConstraintViolation<?> violation) {
