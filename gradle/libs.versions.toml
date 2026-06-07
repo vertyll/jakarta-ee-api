@@ -2,7 +2,7 @@
 # Plugins
 pmd = "7.25.0"
 errorprone-plugin = "5.1.0"
-nullaway-plugin = "3.0.0"
+nullaway-plugin = "3.1.0"
 spotless = "8.6.0"
 
 # SpotBugs and FindSecBugs
