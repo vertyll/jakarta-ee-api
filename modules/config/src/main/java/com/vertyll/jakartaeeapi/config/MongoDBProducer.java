@@ -1,5 +1,9 @@
 package com.vertyll.jakartaeeapi.config;
 
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.enterprise.inject.Disposes;
+import jakarta.enterprise.inject.Produces;
+
 import org.bson.codecs.configuration.CodecRegistries;
 import org.bson.codecs.configuration.CodecRegistry;
 import org.bson.codecs.pojo.PojoCodecProvider;
@@ -10,31 +14,20 @@ import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoClients;
 import com.mongodb.client.MongoDatabase;
 
-import jakarta.enterprise.context.ApplicationScoped;
-import jakarta.enterprise.inject.Disposes;
-import jakarta.enterprise.inject.Produces;
-
 @ApplicationScoped
 public class MongoDBProducer {
 
     @Produces
     @ApplicationScoped
     public MongoClient createMongoClient() {
-        String connectionString =
-                System.getenv().getOrDefault("MONGODB_URI", "mongodb://localhost:27017");
+        String connectionString = System.getenv().getOrDefault("MONGODB_URI", "mongodb://localhost:27017");
 
-        CodecRegistry pojoCodecRegistry =
-                CodecRegistries.fromProviders(PojoCodecProvider.builder().automatic(true).build());
+        CodecRegistry pojoCodecRegistry = CodecRegistries.fromProviders(PojoCodecProvider.builder().automatic(true).build());
 
-        CodecRegistry codecRegistry =
-                CodecRegistries.fromRegistries(
-                        MongoClientSettings.getDefaultCodecRegistry(), pojoCodecRegistry);
+        CodecRegistry codecRegistry = CodecRegistries.fromRegistries(MongoClientSettings.getDefaultCodecRegistry(), pojoCodecRegistry);
 
-        MongoClientSettings settings =
-                MongoClientSettings.builder()
-                        .applyConnectionString(new ConnectionString(connectionString))
-                        .codecRegistry(codecRegistry)
-                        .build();
+        MongoClientSettings settings = MongoClientSettings.builder().applyConnectionString(new ConnectionString(connectionString))
+                .codecRegistry(codecRegistry).build();
 
         return MongoClients.create(settings);
     }

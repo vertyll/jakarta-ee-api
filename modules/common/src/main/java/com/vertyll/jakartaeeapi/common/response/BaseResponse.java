@@ -17,7 +17,8 @@ import lombok.experimental.SuperBuilder;
 public abstract class BaseResponse<T> implements IResponse<T> {
     protected @Nullable T data;
     @Nullable protected String message;
-    @Builder.Default protected LocalDateTime timestamp = LocalDateTime.now(ZoneOffset.UTC);
+    @Builder.Default
+    protected LocalDateTime timestamp = LocalDateTime.now(ZoneOffset.UTC);
     @Nullable protected String path;
     @Nullable protected Map<String, String> validationErrors;
 }

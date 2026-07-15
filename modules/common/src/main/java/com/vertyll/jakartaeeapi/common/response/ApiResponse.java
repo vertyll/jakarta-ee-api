@@ -4,12 +4,12 @@ import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.util.Map;
 
+import jakarta.ws.rs.core.Response;
+
 import org.jspecify.annotations.Nullable;
 
 import lombok.EqualsAndHashCode;
 import lombok.experimental.SuperBuilder;
-
-import jakarta.ws.rs.core.Response;
 
 @SuperBuilder
 @EqualsAndHashCode(callSuper = true)
@@ -23,14 +23,8 @@ public class ApiResponse<T> extends BaseResponse<T> {
      * @param status HTTP status
      * @return Response with ApiResponse entity
      */
-    public static <T> Response buildResponse(
-            @Nullable T data, String message, Response.Status status) {
-        ApiResponse<T> response =
-                ApiResponse.<T>builder()
-                        .data(data)
-                        .message(message)
-                        .timestamp(LocalDateTime.now(ZoneOffset.UTC))
-                        .build();
+    public static <T> Response buildResponse(@Nullable T data, String message, Response.Status status) {
+        ApiResponse<T> response = ApiResponse.<T>builder().data(data).message(message).timestamp(LocalDateTime.now(ZoneOffset.UTC)).build();
         return Response.status(status).entity(response).build();
     }
 
@@ -43,15 +37,9 @@ public class ApiResponse<T> extends BaseResponse<T> {
      * @param path Request path
      * @return Response with ApiResponse entity
      */
-    public static <T> Response buildResponse(
-            @Nullable T data, String message, Response.Status status, @Nullable String path) {
+    public static <T> Response buildResponse(@Nullable T data, String message, Response.Status status, @Nullable String path) {
         ApiResponse<T> response =
-                ApiResponse.<T>builder()
-                        .data(data)
-                        .message(message)
-                        .path(path)
-                        .timestamp(LocalDateTime.now(ZoneOffset.UTC))
-                        .build();
+                ApiResponse.<T>builder().data(data).message(message).path(path).timestamp(LocalDateTime.now(ZoneOffset.UTC)).build();
         return Response.status(status).entity(response).build();
     }
 
@@ -65,17 +53,13 @@ public class ApiResponse<T> extends BaseResponse<T> {
      * @return Response with ApiResponse entity
      */
     public static <T> Response buildResponse(
-            @Nullable T data,
-            String message,
-            Response.Status status,
-            @Nullable Map<String, String> validationErrors) {
-        ApiResponse<T> response =
-                ApiResponse.<T>builder()
-                        .data(data)
-                        .message(message)
-                        .validationErrors(validationErrors)
-                        .timestamp(LocalDateTime.now(ZoneOffset.UTC))
-                        .build();
+        @Nullable T data,
+        String message,
+        Response.Status status,
+        @Nullable Map<String, String> validationErrors
+    ) {
+        ApiResponse<T> response = ApiResponse.<T>builder().data(data).message(message).validationErrors(validationErrors)
+                .timestamp(LocalDateTime.now(ZoneOffset.UTC)).build();
         return Response.status(status).entity(response).build();
     }
 
@@ -90,19 +74,14 @@ public class ApiResponse<T> extends BaseResponse<T> {
      * @return Response with ApiResponse entity
      */
     public static <T> Response buildResponse(
-            @Nullable T data,
-            String message,
-            Response.Status status,
-            @Nullable Map<String, String> validationErrors,
-            @Nullable String path) {
-        ApiResponse<T> response =
-                ApiResponse.<T>builder()
-                        .data(data)
-                        .message(message)
-                        .validationErrors(validationErrors)
-                        .path(path)
-                        .timestamp(LocalDateTime.now(ZoneOffset.UTC))
-                        .build();
+        @Nullable T data,
+        String message,
+        Response.Status status,
+        @Nullable Map<String, String> validationErrors,
+        @Nullable String path
+    ) {
+        ApiResponse<T> response = ApiResponse.<T>builder().data(data).message(message).validationErrors(validationErrors).path(path)
+                .timestamp(LocalDateTime.now(ZoneOffset.UTC)).build();
         return Response.status(status).entity(response).build();
     }
 }

@@ -53,7 +53,7 @@ assertj = "3.27.3"
 rest-assured = "5.5.0"
 
 # Code Quality
-google-java-format = "1.35.0"
+eclipse-jdt = "4.39"
 jspecify = "1.0.0"
 errorprone = "2.50.0"
 nullaway = "0.13.7"
