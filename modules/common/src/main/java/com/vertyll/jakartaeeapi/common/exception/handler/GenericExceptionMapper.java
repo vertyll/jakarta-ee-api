@@ -26,18 +26,19 @@ public class GenericExceptionMapper implements ExceptionMapper<Exception> {
         if (exception instanceof WebApplicationException webEx) {
             log.warn("WebApplicationException: {} at path: {}", webEx.getMessage(), path);
             return ApiResponse
-                    .buildResponse(null, webEx.getMessage(), Response.Status.fromStatusCode(webEx.getResponse().getStatus()), null, path);
+                .buildResponse(null, webEx.getMessage(), Response.Status.fromStatusCode(webEx.getResponse().getStatus()), null, path);
         }
 
         // Log unexpected errors
         log.error("Unexpected error occurred at path: {}", path, exception);
 
-        return ApiResponse.buildResponse(
-            null,
-            "An unexpected error occurred. Please try again later.",
-            Response.Status.INTERNAL_SERVER_ERROR,
-            null,
-            path
-        );
+        return ApiResponse
+            .buildResponse(
+                null,
+                "An unexpected error occurred. Please try again later.",
+                Response.Status.INTERNAL_SERVER_ERROR,
+                null,
+                path
+            );
     }
 }

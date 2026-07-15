@@ -58,8 +58,13 @@ public class ApiResponse<T> extends BaseResponse<T> {
         Response.Status status,
         @Nullable Map<String, String> validationErrors
     ) {
-        ApiResponse<T> response = ApiResponse.<T>builder().data(data).message(message).validationErrors(validationErrors)
-                .timestamp(LocalDateTime.now(ZoneOffset.UTC)).build();
+        ApiResponse<T> response = ApiResponse
+            .<T>builder()
+            .data(data)
+            .message(message)
+            .validationErrors(validationErrors)
+            .timestamp(LocalDateTime.now(ZoneOffset.UTC))
+            .build();
         return Response.status(status).entity(response).build();
     }
 
@@ -80,8 +85,14 @@ public class ApiResponse<T> extends BaseResponse<T> {
         @Nullable Map<String, String> validationErrors,
         @Nullable String path
     ) {
-        ApiResponse<T> response = ApiResponse.<T>builder().data(data).message(message).validationErrors(validationErrors).path(path)
-                .timestamp(LocalDateTime.now(ZoneOffset.UTC)).build();
+        ApiResponse<T> response = ApiResponse
+            .<T>builder()
+            .data(data)
+            .message(message)
+            .validationErrors(validationErrors)
+            .path(path)
+            .timestamp(LocalDateTime.now(ZoneOffset.UTC))
+            .build();
         return Response.status(status).entity(response).build();
     }
 }
