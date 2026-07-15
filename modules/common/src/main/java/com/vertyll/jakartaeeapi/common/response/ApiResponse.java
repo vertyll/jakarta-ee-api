@@ -58,8 +58,7 @@ public class ApiResponse<T> extends BaseResponse<T> {
         Response.Status status,
         @Nullable Map<String, String> validationErrors
     ) {
-        ApiResponse<T> response = ApiResponse
-            .<T>builder()
+        ApiResponse<T> response = ApiResponse.<T>builder()
             .data(data)
             .message(message)
             .validationErrors(validationErrors)
@@ -85,8 +84,7 @@ public class ApiResponse<T> extends BaseResponse<T> {
         @Nullable Map<String, String> validationErrors,
         @Nullable String path
     ) {
-        ApiResponse<T> response = ApiResponse
-            .<T>builder()
+        ApiResponse<T> response = ApiResponse.<T>builder()
             .data(data)
             .message(message)
             .validationErrors(validationErrors)

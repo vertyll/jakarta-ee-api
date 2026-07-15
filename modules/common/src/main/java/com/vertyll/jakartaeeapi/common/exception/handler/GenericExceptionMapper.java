@@ -32,13 +32,12 @@ public class GenericExceptionMapper implements ExceptionMapper<Exception> {
         // Log unexpected errors
         log.error("Unexpected error occurred at path: {}", path, exception);
 
-        return ApiResponse
-            .buildResponse(
-                null,
-                "An unexpected error occurred. Please try again later.",
-                Response.Status.INTERNAL_SERVER_ERROR,
-                null,
-                path
-            );
+        return ApiResponse.buildResponse(
+            null,
+            "An unexpected error occurred. Please try again later.",
+            Response.Status.INTERNAL_SERVER_ERROR,
+            null,
+            path
+        );
     }
 }

@@ -217,7 +217,7 @@
 
         <setting
                 id="org.eclipse.jdt.core.formatter.alignment_for_selector_in_method_invocation"
-                value="52"/>
+                value="84"/>
 
         <setting
                 id="org.eclipse.jdt.core.formatter.wrap_before_selector_in_method_invocation"
@@ -226,6 +226,44 @@
         <setting
                 id="org.eclipse.jdt.core.formatter.align_selector_in_method_invocation_on_expression_first_line"
                 value="false"/>
+
+        <!-- Array initializers, including arrays used in annotations -->
+
+        <setting
+                id="org.eclipse.jdt.core.formatter.alignment_for_expressions_in_array_initializer"
+                value="53"/>
+
+        <setting
+                id="org.eclipse.jdt.core.formatter.brace_position_for_array_initializer"
+                value="end_of_line"/>
+
+        <setting
+                id="org.eclipse.jdt.core.formatter.insert_new_line_after_opening_brace_in_array_initializer"
+                value="insert"/>
+
+        <setting
+                id="org.eclipse.jdt.core.formatter.insert_new_line_before_closing_brace_in_array_initializer"
+                value="insert"/>
+
+        <setting
+                id="org.eclipse.jdt.core.formatter.keep_empty_array_initializer_on_one_line"
+                value="true"/>
+
+        <setting
+                id="org.eclipse.jdt.core.formatter.insert_space_before_opening_brace_in_array_initializer"
+                value="insert"/>
+
+        <setting
+                id="org.eclipse.jdt.core.formatter.insert_space_after_opening_brace_in_array_initializer"
+                value="do not insert"/>
+
+        <setting
+                id="org.eclipse.jdt.core.formatter.insert_space_before_closing_brace_in_array_initializer"
+                value="do not insert"/>
+
+        <setting
+                id="org.eclipse.jdt.core.formatter.insert_space_between_empty_braces_in_array_initializer"
+                value="do not insert"/>
 
         <!-- Assignments -->
 
