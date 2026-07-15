@@ -41,8 +41,12 @@ public class ApiResponse<T> extends BaseResponse<T> {
      * @param path Request path
      * @return Response with ApiResponse entity
      */
-    public static <
-        T> Response buildResponse(@Nullable T data, String message, Response.Status status, @Nullable String path) {
+    public static <T> Response buildResponse(
+        @Nullable T data,
+        String message,
+        Response.Status status,
+        @Nullable String path
+    ) {
         ApiResponse<T> response = ApiResponse.<T>builder()
             .data(data)
             .message(message)

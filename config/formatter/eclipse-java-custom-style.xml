@@ -143,6 +143,16 @@
                 id="org.eclipse.jdt.core.formatter.parentheses_positions_in_enum_constant_declaration"
                 value="separate_lines_if_wrapped"/>
 
+        <!-- Generic declarations and parameterized types -->
+
+        <setting
+                id="org.eclipse.jdt.core.formatter.alignment_for_method_declaration"
+                value="0"/>
+
+        <setting
+                id="org.eclipse.jdt.core.formatter.alignment_for_parameterized_type_references"
+                value="0"/>
+
         <setting
                 id="org.eclipse.jdt.core.formatter.alignment_for_parameters_in_method_declaration"
                 value="52"/>
@@ -181,11 +191,11 @@
 
         <setting
                 id="org.eclipse.jdt.core.formatter.alignment_for_type_parameters"
-                value="52"/>
+                value="0"/>
 
         <setting
                 id="org.eclipse.jdt.core.formatter.alignment_for_type_arguments"
-                value="52"/>
+                value="0"/>
 
         <setting
                 id="org.eclipse.jdt.core.formatter.alignment_for_superinterfaces_in_type_declaration"
