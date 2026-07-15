@@ -36,7 +36,8 @@ public class ConstraintViolationExceptionMapper implements ExceptionMapper<Const
 
         log.warn("Validation failed at path: {} with {} violations", path, validationErrors.size());
 
-        return ApiResponse.buildResponse(null, "Validation failed", Response.Status.BAD_REQUEST, validationErrors, path);
+        return ApiResponse
+            .buildResponse(null, "Validation failed", Response.Status.BAD_REQUEST, validationErrors, path);
     }
 
     private String getFieldName(ConstraintViolation<?> violation) {

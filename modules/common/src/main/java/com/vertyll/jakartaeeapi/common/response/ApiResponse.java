@@ -24,7 +24,11 @@ public class ApiResponse<T> extends BaseResponse<T> {
      * @return Response with ApiResponse entity
      */
     public static <T> Response buildResponse(@Nullable T data, String message, Response.Status status) {
-        ApiResponse<T> response = ApiResponse.<T>builder().data(data).message(message).timestamp(LocalDateTime.now(ZoneOffset.UTC)).build();
+        ApiResponse<T> response = ApiResponse.<T>builder()
+            .data(data)
+            .message(message)
+            .timestamp(LocalDateTime.now(ZoneOffset.UTC))
+            .build();
         return Response.status(status).entity(response).build();
     }
 
@@ -37,9 +41,14 @@ public class ApiResponse<T> extends BaseResponse<T> {
      * @param path Request path
      * @return Response with ApiResponse entity
      */
-    public static <T> Response buildResponse(@Nullable T data, String message, Response.Status status, @Nullable String path) {
-        ApiResponse<T> response =
-                ApiResponse.<T>builder().data(data).message(message).path(path).timestamp(LocalDateTime.now(ZoneOffset.UTC)).build();
+    public static <
+        T> Response buildResponse(@Nullable T data, String message, Response.Status status, @Nullable String path) {
+        ApiResponse<T> response = ApiResponse.<T>builder()
+            .data(data)
+            .message(message)
+            .path(path)
+            .timestamp(LocalDateTime.now(ZoneOffset.UTC))
+            .build();
         return Response.status(status).entity(response).build();
     }
 

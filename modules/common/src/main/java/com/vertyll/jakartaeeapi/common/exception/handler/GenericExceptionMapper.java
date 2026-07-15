@@ -25,8 +25,13 @@ public class GenericExceptionMapper implements ExceptionMapper<Exception> {
         // Handle JAX-RS WebApplicationException separately
         if (exception instanceof WebApplicationException webEx) {
             log.warn("WebApplicationException: {} at path: {}", webEx.getMessage(), path);
-            return ApiResponse
-                .buildResponse(null, webEx.getMessage(), Response.Status.fromStatusCode(webEx.getResponse().getStatus()), null, path);
+            return ApiResponse.buildResponse(
+                null,
+                webEx.getMessage(),
+                Response.Status.fromStatusCode(webEx.getResponse().getStatus()),
+                null,
+                path
+            );
         }
 
         // Log unexpected errors

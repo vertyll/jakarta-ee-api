@@ -22,9 +22,11 @@ public class MongoDBProducer {
     public MongoClient createMongoClient() {
         String connectionString = System.getenv().getOrDefault("MONGODB_URI", "mongodb://localhost:27017");
 
-        CodecRegistry pojoCodecRegistry = CodecRegistries.fromProviders(PojoCodecProvider.builder().automatic(true).build());
+        CodecRegistry pojoCodecRegistry =
+                CodecRegistries.fromProviders(PojoCodecProvider.builder().automatic(true).build());
 
-        CodecRegistry codecRegistry = CodecRegistries.fromRegistries(MongoClientSettings.getDefaultCodecRegistry(), pojoCodecRegistry);
+        CodecRegistry codecRegistry =
+                CodecRegistries.fromRegistries(MongoClientSettings.getDefaultCodecRegistry(), pojoCodecRegistry);
 
         MongoClientSettings settings = MongoClientSettings.builder()
             .applyConnectionString(new ConnectionString(connectionString))
