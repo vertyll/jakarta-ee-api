@@ -249,6 +249,8 @@ subprojects {
                 "**/*Impl.java",
             )
 
+            expandWildcardImports()
+
             removeUnusedImports()
 
             importOrder(
