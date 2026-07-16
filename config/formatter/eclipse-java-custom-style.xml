@@ -217,11 +217,11 @@
 
         <setting
                 id="org.eclipse.jdt.core.formatter.alignment_for_throws_clause_in_method_declaration"
-                value="16"/>
+                value="0"/>
 
         <setting
                 id="org.eclipse.jdt.core.formatter.alignment_for_throws_clause_in_constructor_declaration"
-                value="16"/>
+                value="0"/>
 
         <!-- Chained method calls / streams / builders / fluent API -->
 
