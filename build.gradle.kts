@@ -151,7 +151,7 @@ subprojects {
             option("NullAway:CustomContractAnnotations", "org.springframework.lang.Contract")
             option("NullAway:JSpecifyMode", "true")
 
-            option("NullAway:ExcludedFieldAnnotations", "lombok.Generated")
+            option("NullAway:ExcludedFieldAnnotations", "lombok.Generated,jakarta.ws.rs.core.Context,jakarta.inject.Inject")
             option("NullAway:TreatGeneratedAsUnannotated", "true")
 
             option("NullAway:AcknowledgeRestrictiveAnnotations", "true")

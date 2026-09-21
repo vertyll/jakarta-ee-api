@@ -23,7 +23,7 @@ public class ApiResponse<T> extends BaseResponse<T> {
      * @param status HTTP status
      * @return Response with ApiResponse entity
      */
-    public static <T> Response buildResponse(@Nullable T data, String message, Response.Status status) {
+    public static <T> Response buildResponse(@Nullable T data, String message, Response.StatusType status) {
         ApiResponse<T> response = ApiResponse.<T>builder()
             .data(data)
             .message(message)
@@ -44,7 +44,7 @@ public class ApiResponse<T> extends BaseResponse<T> {
     public static <T> Response buildResponse(
         @Nullable T data,
         String message,
-        Response.Status status,
+        Response.StatusType status,
         @Nullable String path
     ) {
         ApiResponse<T> response = ApiResponse.<T>builder()
@@ -68,7 +68,7 @@ public class ApiResponse<T> extends BaseResponse<T> {
     public static <T> Response buildResponse(
         @Nullable T data,
         String message,
-        Response.Status status,
+        Response.StatusType status,
         @Nullable Map<String, String> validationErrors
     ) {
         ApiResponse<T> response = ApiResponse.<T>builder()
@@ -93,7 +93,7 @@ public class ApiResponse<T> extends BaseResponse<T> {
     public static <T> Response buildResponse(
         @Nullable T data,
         String message,
-        Response.Status status,
+        Response.StatusType status,
         @Nullable Map<String, String> validationErrors,
         @Nullable String path
     ) {

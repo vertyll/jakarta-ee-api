@@ -24,7 +24,7 @@ public class ConstraintViolationExceptionMapper implements ExceptionMapper<Const
 
     @Override
     public Response toResponse(ConstraintViolationException exception) {
-        String path = uriInfo != null ? uriInfo.getPath() : null;
+        String path = uriInfo.getPath();
 
         Map<String, String> validationErrors = new ConcurrentHashMap<>();
 

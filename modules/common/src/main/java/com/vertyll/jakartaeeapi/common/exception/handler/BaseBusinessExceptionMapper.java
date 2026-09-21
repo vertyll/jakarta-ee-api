@@ -24,7 +24,7 @@ public class BaseBusinessExceptionMapper implements ExceptionMapper<BaseBusiness
 
     @Override
     public Response toResponse(BaseBusinessException exception) {
-        String path = uriInfo != null ? uriInfo.getPath() : null;
+        String path = uriInfo.getPath();
 
         // Determine HTTP status
         Response.Status status = Response.Status.BAD_REQUEST; // default

@@ -1,5 +1,7 @@
 package com.vertyll.jakartaeeapi.common.exception.handler;
 
+import java.util.Objects;
+
 import jakarta.ws.rs.WebApplicationException;
 import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.Response;
@@ -20,18 +22,14 @@ public class GenericExceptionMapper implements ExceptionMapper<Exception> {
 
     @Override
     public Response toResponse(Exception exception) {
-        String path = uriInfo != null ? uriInfo.getPath() : null;
+        String path = uriInfo.getPath();
 
         // Handle JAX-RS WebApplicationException separately
         if (exception instanceof WebApplicationException webEx) {
-            log.warn("WebApplicationException: {} at path: {}", webEx.getMessage(), path);
-            return ApiResponse.buildResponse(
-                null,
-                webEx.getMessage(),
-                Response.Status.fromStatusCode(webEx.getResponse().getStatus()),
-                null,
-                path
-            );
+            Response.StatusType status = webEx.getResponse().getStatusInfo();
+            String message = Objects.requireNonNullElse(webEx.getMessage(), status.getReasonPhrase());
+            log.warn("WebApplicationException: {} at path: {}", message, path);
+            return ApiResponse.buildResponse(null, message, status, null, path);
         }
 
         // Log unexpected errors
