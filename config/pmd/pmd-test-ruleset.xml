@@ -1,19 +1,29 @@
 <?xml version="1.0"?>
-<ruleset xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         name="Test PMD Rules"
+<ruleset name="Test PMD Rules"
          xmlns="http://pmd.sourceforge.net/ruleset/2.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://pmd.sourceforge.net/ruleset/2.0.0 https://pmd.sourceforge.io/ruleset_2_0_0.xsd">
     <description>PMD rules for test code</description>
 
     <!-- Best Practices -->
     <rule ref="category/java/bestpractices.xml">
+        <exclude name="ImplicitFunctionalInterface"/>
         <exclude name="UnitTestContainsTooManyAsserts"/>
         <exclude name="UnitTestAssertionsShouldIncludeMessage"/>
         <exclude name="UnitTestShouldIncludeAssert"/>
+        <exclude name="LooseCoupling"/>
+    </rule>
+
+    <!-- Best Practices: allow MongoDB's org.bson.Document for raw test data -->
+    <rule ref="category/java/bestpractices.xml/LooseCoupling">
+        <properties>
+            <property name="allowedTypes" value="java.util.Properties,org.bson.Document"/>
+        </properties>
     </rule>
 
     <!-- Code Style -->
     <rule ref="category/java/codestyle.xml">
+        <exclude name="ShortMethodName"/>
         <exclude name="OnlyOneReturn"/>
         <exclude name="AtLeastOneConstructor"/>
         <exclude name="CommentDefaultAccessModifier"/>
@@ -24,7 +34,6 @@
         <exclude name="MethodArgumentCouldBeFinal"/>
         <exclude name="LocalVariableCouldBeFinal"/>
         <exclude name="MethodNamingConventions"/>
-        <exclude name="UseUnderscoresInNumericLiterals"/>
         <exclude name="LinguisticNaming"/>
     </rule>
 
@@ -44,21 +53,31 @@
     <rule ref="category/java/documentation.xml">
         <exclude name="CommentRequired"/>
         <exclude name="CommentSize"/>
+        <exclude name="UncommentedEmptyMethodBody"/>
+        <exclude name="UncommentedEmptyConstructor"/>
     </rule>
 
     <!-- Error Prone -->
     <rule ref="category/java/errorprone.xml">
+        <exclude name="NullAssignment"/>
+        <exclude name="AvoidFieldNameMatchingMethodName"/>
+        <exclude name="AvoidLiteralsInIfCondition"/>
         <exclude name="AvoidDuplicateLiterals"/>
         <exclude name="MissingSerialVersionUID"/>
         <exclude name="TestClassWithoutTestCases"/>
     </rule>
 
     <!-- Multithreading -->
-    <rule ref="category/java/multithreading.xml"/>
+    <rule ref="category/java/multithreading.xml">
+        <exclude name="UseConcurrentHashMap"/>
+        <exclude name="DoNotUseThreads"/>
+    </rule>
 
     <!-- Performance -->
     <rule ref="category/java/performance.xml">
-        <exclude name="RedundantFieldInitializer"/>
+        <exclude name="TooFewBranchesForSwitch"/>
+        <exclude name="AvoidInstantiatingObjectsInLoops"/>
+        <exclude name="RedundantFieldInitializer" />
     </rule>
 
     <!-- Security -->

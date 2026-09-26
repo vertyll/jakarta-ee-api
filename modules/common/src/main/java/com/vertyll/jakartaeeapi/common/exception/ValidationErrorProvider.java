@@ -1,11 +1,9 @@
 package com.vertyll.jakartaeeapi.common.exception;
 
+import java.util.List;
 import java.util.Map;
 
-import org.jspecify.annotations.Nullable;
-
-/** Interface for exceptions that contain validation errors */
 @FunctionalInterface
 public interface ValidationErrorProvider {
-    @Nullable Map<String, String> getValidationErrors();
+    Map<String, List<String>> getValidationErrors();
 }

@@ -1,7 +1,9 @@
 package com.vertyll.jakartaeeapi.common.exception.handler;
 
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
@@ -11,7 +13,7 @@ import jakarta.ws.rs.core.UriInfo;
 import jakarta.ws.rs.ext.ExceptionMapper;
 import jakarta.ws.rs.ext.Provider;
 
-import com.vertyll.jakartaeeapi.common.response.ApiResponse;
+import com.vertyll.jakartaeeapi.common.problem.Problems;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -19,36 +21,25 @@ import lombok.extern.slf4j.Slf4j;
 @Provider
 public class ConstraintViolationExceptionMapper implements ExceptionMapper<ConstraintViolationException> {
 
+    private static final String VALIDATION_FAILED = "Validation failed";
+
     @Context
     private UriInfo uriInfo;
 
     @Override
     public Response toResponse(ConstraintViolationException exception) {
-        String path = uriInfo.getPath();
-
-        Map<String, String> validationErrors = new ConcurrentHashMap<>();
-
+        Map<String, List<String>> errors = new LinkedHashMap<>();
         for (ConstraintViolation<?> violation : exception.getConstraintViolations()) {
-            String fieldName = getFieldName(violation);
-            String message = violation.getMessage();
-            validationErrors.put(fieldName, message);
+            errors.computeIfAbsent(fieldName(violation), _ -> new ArrayList<>()).add(violation.getMessage());
         }
-
-        log.warn("Validation failed at path: {} with {} violations", path, validationErrors.size());
-
-        return ApiResponse
-            .buildResponse(null, "Validation failed", Response.Status.BAD_REQUEST, validationErrors, path);
+        String path = uriInfo.getPath();
+        log.warn("Validation failed at path {} with {} invalid fields", path, errors.size());
+        return Problems.response(Problems.of(Response.Status.BAD_REQUEST, VALIDATION_FAILED, path).withErrors(errors));
     }
 
-    private String getFieldName(ConstraintViolation<?> violation) {
+    private static String fieldName(ConstraintViolation<?> violation) {
         String propertyPath = violation.getPropertyPath().toString();
-
-        // Extract field name from path like "createStation.stationDto.name"
         int lastDot = propertyPath.lastIndexOf('.');
-        if (lastDot != -1) {
-            return propertyPath.substring(lastDot + 1);
-        }
-
-        return propertyPath;
+        return lastDot == -1 ? propertyPath : propertyPath.substring(lastDot + 1);
     }
 }
