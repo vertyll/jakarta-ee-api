@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<server description="jakarta-ee-api">
+    <featureManager>
+        <feature>servlet-6.1</feature>
+        <feature>restfulWS-4.0</feature>
+        <feature>jsonb-3.0</feature>
+        <feature>cdi-4.1</feature>
+        <feature>validation-3.1</feature>
+    </featureManager>
+
+    <variable name="http.port" defaultValue="8080"/>
+
+    <httpEndpoint id="defaultHttpEndpoint" host="*" httpPort="${http.port}" httpsPort="-1"/>
+
+    <webApplication location="jakarta-ee-api.war" contextRoot="/"/>
+
+    <logging consoleFormat="SIMPLE" consoleSource="message" traceSpecification="*=info"/>
+</server>

@@ -10,6 +10,14 @@
     <rule ref="category/java/bestpractices.xml">
         <exclude name="ImplicitFunctionalInterface"/>
         <exclude name="GuardLogStatement"/>
+        <exclude name="LooseCoupling"/>
+    </rule>
+
+    <!-- Best Practices: allow types that have no interface (MongoDB's Document, ArchUnit's JavaClasses) -->
+    <rule ref="category/java/bestpractices.xml/LooseCoupling">
+        <properties>
+            <property name="allowedTypes" value="java.util.Properties,org.bson.Document,com.tngtech.archunit.core.domain.JavaClasses"/>
+        </properties>
     </rule>
 
     <!-- Code Style -->
@@ -36,6 +44,14 @@
         <exclude name="ExcessiveImports"/>
         <exclude name="TooManyFields"/>
         <exclude name="LoosePackageCoupling"/>
+        <exclude name="ImmutableField"/>
+    </rule>
+
+    <!-- Design: JPA entity fields cannot be final -->
+    <rule ref="category/java/design.xml/ImmutableField">
+        <properties>
+            <property name="violationSuppressXPath" value="ancestor::ClassDeclaration[pmd-java:hasAnnotation('jakarta.persistence.Entity')]"/>
+        </properties>
     </rule>
 
     <!-- Documentation -->

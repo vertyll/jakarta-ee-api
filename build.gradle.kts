@@ -2,7 +2,6 @@ import net.ltgt.gradle.errorprone.errorprone
 
 plugins {
     java
-    war
     pmd
     alias(libs.plugins.spotless) apply false
     alias(libs.plugins.errorprone) apply false
@@ -26,7 +25,6 @@ allprojects {
 subprojects {
     apply {
         plugin("java")
-        plugin("war")
         plugin("pmd")
         plugin("com.diffplug.spotless")
         plugin("net.ltgt.errorprone")

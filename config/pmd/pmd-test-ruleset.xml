@@ -14,10 +14,10 @@
         <exclude name="LooseCoupling"/>
     </rule>
 
-    <!-- Best Practices: allow MongoDB's org.bson.Document for raw test data -->
+    <!-- Best Practices: allow types that have no interface (MongoDB's Document, ArchUnit's JavaClasses) -->
     <rule ref="category/java/bestpractices.xml/LooseCoupling">
         <properties>
-            <property name="allowedTypes" value="java.util.Properties,org.bson.Document"/>
+            <property name="allowedTypes" value="java.util.Properties,org.bson.Document,com.tngtech.archunit.core.domain.JavaClasses"/>
         </properties>
     </rule>
 

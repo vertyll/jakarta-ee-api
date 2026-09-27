@@ -1,0 +1,44 @@
+### Global / Git ###
+.git/
+.gitignore
+.dockerignore
+.github/
+README.md
+LICENSE
+
+### Build outputs ###
+**/build/
+**/target/
+**/bin/
+**/out/
+**/*.jar
+!**/gradle/wrapper/gradle-wrapper.jar
+!**/gradle/
+**/*.war
+
+### Development & IDEs ###
+**/.idea/
+**/.vscode/
+**/.settings/
+**/*.iml
+**/*.ipr
+**/*.iws
+**/.project
+**/.classpath
+**/*.log
+**/logs/
+**/.env*
+
+### Cache & Package Managers ###
+**/.gradle/
+**/.m2/
+**/node_modules/
+
+### OS ###
+**/.DS_Store
+**/Thumbs.db
+
+### Docker ###
+**/Dockerfile
+**/docker-compose*.yml
+**/docker/
