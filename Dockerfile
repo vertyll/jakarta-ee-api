@@ -8,7 +8,8 @@ RUN --mount=type=cache,target=/root/.gradle ./gradlew --no-daemon :modules:app:l
 
 FROM ${JRE_IMAGE} AS runtime
 WORKDIR /app
-RUN groupadd --system --gid 1001 jakartaeeapi && useradd --system --uid 1001 --gid jakartaeeapi --create-home jakartaeeapi
+RUN groupadd --system --gid 1001 jakartaeeapi \
+    && useradd --system --uid 1001 --gid jakartaeeapi --create-home jakartaeeapi
 
 COPY --from=build --chown=jakartaeeapi:jakartaeeapi /workspace/modules/app/build/libs/jakarta-ee-api.jar app.jar
 
