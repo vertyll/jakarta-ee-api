@@ -1,4 +1,6 @@
 [versions]
+jacoco = "0.8.15"
+sonarqube = "7.5.0.8588"
 java = "25"
 pmd = "7.28.0"
 errorprone-plugin = "5.1.1"
@@ -68,6 +70,7 @@ errorprone = { id = "net.ltgt.errorprone", version.ref = "errorprone-plugin" }
 nullaway = { id = "net.ltgt.nullaway", version.ref = "nullaway-plugin" }
 spotbugs = { id = "com.github.spotbugs", version.ref = "spotbugs" }
 liberty = { id = "io.openliberty.tools.gradle.Liberty", version.ref = "liberty-plugin" }
+sonarqube = { id = "org.sonarqube", version.ref = "sonarqube" }
 
 [bundles]
 testing = [

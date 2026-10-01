@@ -7,6 +7,7 @@ plugins {
     alias(libs.plugins.errorprone) apply false
     alias(libs.plugins.nullaway) apply false
     alias(libs.plugins.spotbugs) apply false
+    alias(libs.plugins.sonarqube)
 }
 
 group = "com.vertyll"
@@ -30,11 +31,23 @@ subprojects {
         plugin("net.ltgt.errorprone")
         plugin("net.ltgt.nullaway")
         plugin("com.github.spotbugs")
+        plugin("jacoco")
     }
 
     java {
         toolchain {
             languageVersion.set(JavaLanguageVersion.of(rootProject.libs.versions.java.get()))
+        }
+    }
+
+    configure<JacocoPluginExtension> {
+        toolVersion = rootProject.libs.versions.jacoco.get()
+    }
+
+    tasks.withType<JacocoReport> {
+        dependsOn(tasks.withType<Test>())
+        reports {
+            xml.required = true
         }
     }
 
@@ -396,5 +409,12 @@ tasks.register("spotbugsAll") {
         }
 
         println("\n$ansiBold═══════════════════════════════════════════════════════════════$ansiReset\n")
+    }
+}
+
+sonar {
+    properties {
+        property("sonar.projectKey", "jakarta-ee-api")
+        property("sonar.projectName", "jakarta-ee-api")
     }
 }
