@@ -412,6 +412,10 @@ tasks.register("spotbugsAll") {
     }
 }
 
+tasks.named("sonar") {
+    dependsOn(subprojects.map { "${it.path}:jacocoTestReport" })
+}
+
 sonar {
     properties {
         property("sonar.projectKey", "jakarta-ee-api")
