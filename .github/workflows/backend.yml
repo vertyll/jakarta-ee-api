@@ -1,4 +1,4 @@
-name: Jakarta EE API
+name: Backend
 
 on:
   push:
@@ -12,7 +12,7 @@ permissions:
   contents: read
 
 concurrency:
-  group: jakarta-ee-api-${{ github.ref }}
+  group: backend-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
