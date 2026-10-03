@@ -42,4 +42,9 @@
     <Match>
         <Bug pattern="EI_EXPOSE_REP,EI_EXPOSE_REP2"/>
     </Match>
+
+    <!-- FindSecBugs: Ignore informational JAX-RS endpoint detection -->
+    <Match>
+        <Bug pattern="JAXRS_ENDPOINT"/>
+    </Match>
 </FindBugsFilter>

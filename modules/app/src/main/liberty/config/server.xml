@@ -6,11 +6,34 @@
         <feature>jsonb-3.0</feature>
         <feature>cdi-4.1</feature>
         <feature>validation-3.1</feature>
+        <feature>sessionCache-1.0</feature>
+        <feature>mail-2.1</feature>
     </featureManager>
 
     <variable name="http.port" defaultValue="8080"/>
+    <variable name="session.cookie.secure" defaultValue="true"/>
 
     <httpEndpoint id="defaultHttpEndpoint" host="*" httpPort="${http.port}" httpsPort="-1"/>
+
+    <httpSession cookieName="JAKARTA_EE_API_SESSION" cookieHttpOnly="true" cookieSecure="${session.cookie.secure}"
+                 cookieSameSite="Lax" invalidationTimeout="10h"/>
+
+    <library id="sessionStoreLibrary">
+        <fileset dir="${shared.resource.dir}/redisson" includes="*.jar"/>
+    </library>
+
+    <httpSessionCache libraryRef="sessionStoreLibrary" uri="file:${server.config.dir}/redisson-jcache.yaml"/>
+
+    <mailSession mailSessionID="applicationMail" jndiName="mail/application" host="${env.MAIL_HOST}"
+                 from="${env.MAIL_FROM}" user="${env.MAIL_USERNAME}" password="${env.MAIL_PASSWORD}"
+                 transportProtocol="smtp">
+        <property name="mail.smtp.port" value="${env.MAIL_PORT}"/>
+        <property name="mail.smtp.auth" value="${env.MAIL_SMTP_AUTH}"/>
+        <property name="mail.smtp.starttls.enable" value="${env.MAIL_SMTP_STARTTLS}"/>
+        <property name="mail.smtp.connectiontimeout" value="5000"/>
+        <property name="mail.smtp.timeout" value="5000"/>
+        <property name="mail.smtp.writetimeout" value="5000"/>
+    </mailSession>
 
     <webApplication location="jakarta-ee-api.war" contextRoot="/"/>
 
