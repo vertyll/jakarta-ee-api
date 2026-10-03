@@ -24,7 +24,8 @@
 
     <httpSessionCache libraryRef="sessionStoreLibrary" uri="file:${server.config.dir}/redisson-jcache.yaml"/>
 
-    <mailSession mailSessionID="applicationMail" jndiName="mail/application" host="${env.MAIL_HOST}"
+    <mailSession mailSessionID="applicationMail" jndiName="mail/application" description="Application mail"
+                 host="${env.MAIL_HOST}"
                  from="${env.MAIL_FROM}" user="${env.MAIL_USERNAME}" password="${env.MAIL_PASSWORD}"
                  transportProtocol="smtp">
         <property name="mail.smtp.port" value="${env.MAIL_PORT}"/>

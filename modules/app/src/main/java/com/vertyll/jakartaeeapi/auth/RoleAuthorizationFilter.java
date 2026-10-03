@@ -3,6 +3,7 @@ package com.vertyll.jakartaeeapi.auth;
 import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Method;
 import java.util.List;
+import java.util.Optional;
 
 import jakarta.annotation.Priority;
 import jakarta.annotation.security.DenyAll;
@@ -26,6 +27,7 @@ import com.vertyll.jakartaeeapi.common.problem.Problems;
 public class RoleAuthorizationFilter implements ContainerRequestFilter {
     private static final String AUTHENTICATION_REQUIRED = "errors.auth.authenticationRequired";
     private static final String ACCESS_DENIED = "errors.auth.accessDenied";
+    private static final Refusal UNAUTHENTICATED = new Refusal(Response.Status.UNAUTHORIZED, AUTHENTICATION_REQUIRED);
 
     @Context
     private ResourceInfo resource;
@@ -37,56 +39,50 @@ public class RoleAuthorizationFilter implements ContainerRequestFilter {
         if (method == null || type == null) {
             return;
         }
-        Refusal refusal = refusal(rule(method, type), context.getSecurityContext());
-        if (refusal != null) {
-            context.abortWith(
+        refusal(rule(method, type), context.getSecurityContext()).ifPresent(
+            refusal -> context.abortWith(
                 Problems.response(
                     Problems.of(refusal.status(), refusal.messageKey(), context.getUriInfo().getPath())
                         .withCode(refusal.messageKey(), List.of())
                 )
-            );
-        }
+            )
+        );
     }
 
-    static @Nullable Refusal refusal(Rule rule, @Nullable SecurityContext security) {
+    static Optional<Refusal> refusal(Rule rule, @Nullable SecurityContext security) {
         boolean signedIn = security != null && security.getUserPrincipal() != null;
         return switch (rule.kind()) {
-            case PERMIT_ALL -> null;
-            case DENY_ALL -> new Refusal(Response.Status.FORBIDDEN, ACCESS_DENIED);
-            case AUTHENTICATED -> signedIn ? null : new Refusal(Response.Status.UNAUTHORIZED, AUTHENTICATION_REQUIRED);
+            case PERMIT_ALL -> Optional.empty();
+            case DENY_ALL -> Optional.of(new Refusal(Response.Status.FORBIDDEN, ACCESS_DENIED));
+            case AUTHENTICATED -> signedIn ? Optional.empty() : Optional.of(UNAUTHENTICATED);
             case ROLES -> rolesRefusal(rule, security, signedIn);
         };
     }
 
-    private static @Nullable Refusal rolesRefusal(Rule rule, @Nullable SecurityContext security, boolean signedIn) {
+    private static Optional<Refusal> rolesRefusal(Rule rule, @Nullable SecurityContext security, boolean signedIn) {
         if (security == null || !signedIn) {
-            return new Refusal(Response.Status.UNAUTHORIZED, AUTHENTICATION_REQUIRED);
+            return Optional.of(UNAUTHENTICATED);
         }
-        return rule.roles().stream().anyMatch(security::isUserInRole) ? null
-                : new Refusal(Response.Status.FORBIDDEN, ACCESS_DENIED);
+        return rule.roles().stream().anyMatch(security::isUserInRole) ? Optional.empty()
+                : Optional.of(new Refusal(Response.Status.FORBIDDEN, ACCESS_DENIED));
     }
 
     static Rule rule(Method method, Class<?> type) {
-        Rule onMethod = ruleOf(method);
-        if (onMethod != null) {
-            return onMethod;
-        }
-        Rule onType = ruleOf(type);
-        return onType != null ? onType : new Rule(Kind.AUTHENTICATED, List.of());
+        return ruleOf(method).or(() -> ruleOf(type)).orElseGet(() -> new Rule(Kind.AUTHENTICATED, List.of()));
     }
 
-    private static @Nullable Rule ruleOf(AnnotatedElement element) {
+    private static Optional<Rule> ruleOf(AnnotatedElement element) {
         if (element.isAnnotationPresent(DenyAll.class)) {
-            return new Rule(Kind.DENY_ALL, List.of());
+            return Optional.of(new Rule(Kind.DENY_ALL, List.of()));
         }
         RolesAllowed roles = element.getAnnotation(RolesAllowed.class);
         if (roles != null) {
-            return new Rule(Kind.ROLES, List.of(roles.value()));
+            return Optional.of(new Rule(Kind.ROLES, List.of(roles.value())));
         }
         if (element.isAnnotationPresent(PermitAll.class)) {
-            return new Rule(Kind.PERMIT_ALL, List.of());
+            return Optional.of(new Rule(Kind.PERMIT_ALL, List.of()));
         }
-        return null;
+        return Optional.empty();
     }
 
     enum Kind {

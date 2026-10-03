@@ -23,6 +23,7 @@ mongodb-driver = "5.13.0"
 nimbus-jose-jwt = "10.10"
 yasson = "3.0.5"
 redisson = "4.8.0"
+netty = "4.2.18.Final"
 
 lombok = "1.18.48"
 
@@ -53,6 +54,7 @@ mongodb-driver-sync = { module = "org.mongodb:mongodb-driver-sync", version.ref 
 nimbus-jose-jwt = { module = "com.nimbusds:nimbus-jose-jwt", version.ref = "nimbus-jose-jwt" }
 yasson = { module = "org.eclipse:yasson", version.ref = "yasson" }
 redisson = { module = "org.redisson:redisson", version.ref = "redisson" }
+netty-resolver-dns-native-macos = { module = "io.netty:netty-resolver-dns-native-macos", version.ref = "netty" }
 
 lombok = { module = "org.projectlombok:lombok", version.ref = "lombok" }
 

@@ -102,8 +102,7 @@ class KeycloakTokenClientTest {
     private KeycloakTokenClient client() {
         String base = "http://127.0.0.1:" + keycloak.getAddress().getPort();
         AuthSettings settings = new AuthSettings(
-            base,
-            "jakarta-ee-api",
+            base + "/realms/jakarta-ee-api",
             "jakarta-ee-api",
             "secret",
             TestTokens.AUDIENCE,
@@ -125,7 +124,7 @@ class KeycloakTokenClientTest {
     private static void awaitQuietly(CountDownLatch latch) {
         try {
             assertThat(latch.await(5, TimeUnit.SECONDS)).isTrue();
-        } catch (InterruptedException e) {
+        } catch (InterruptedException _) {
             Thread.currentThread().interrupt();
         }
     }

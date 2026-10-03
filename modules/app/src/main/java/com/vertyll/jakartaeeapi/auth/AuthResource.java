@@ -36,23 +36,22 @@ public class AuthResource {
     private static final Set<String> ALLOWED_ACTIONS = Set.of("CONFIGURE_TOTP", "UPDATE_PASSWORD", "delete_credential");
     private static final Set<String> UI_LOCALES = Set.of("pl", "en");
 
-    @Inject
-    private SessionService sessions;
+    private final SessionService sessions;
+    private final AuthSettings settings;
 
     @Inject
-    private AuthSettings settings;
-
-    @Context
-    private HttpServletRequest request;
-
-    @Context
-    private HttpHeaders headers;
+    public AuthResource(SessionService sessions, AuthSettings settings) {
+        this.sessions = sessions;
+        this.settings = settings;
+    }
 
     @GET
     @Path("/authorize")
     public Response authorize(
         @QueryParam("kc_action") @Nullable String kcAction,
-        @QueryParam("register") @DefaultValue("false") boolean register
+        @QueryParam("register") @DefaultValue("false") boolean register,
+        @Context HttpServletRequest request,
+        @Context HttpHeaders headers
     ) {
         SignInTransaction transaction = BrowserSessions.begin(request);
         UriBuilder uri = UriBuilder.fromUri(settings.endpoint("auth"))
@@ -63,7 +62,7 @@ public class AuthResource {
             .queryParam("state", transaction.state())
             .queryParam("code_challenge", Pkce.challengeOf(transaction.codeVerifier()))
             .queryParam("code_challenge_method", Pkce.CHALLENGE_METHOD);
-        language().ifPresent(language -> uri.queryParam("ui_locales", language));
+        language(headers).ifPresent(language -> uri.queryParam("ui_locales", language));
         if (kcAction != null && ALLOWED_ACTIONS.contains(kcAction)) {
             uri.queryParam("kc_action", kcAction);
         }
@@ -78,7 +77,8 @@ public class AuthResource {
     public Response callback(
         @QueryParam("code") @Nullable String code,
         @QueryParam("state") @Nullable String state,
-        @QueryParam(ERROR_PARAM) @Nullable String error
+        @QueryParam(ERROR_PARAM) @Nullable String error,
+        @Context HttpServletRequest request
     ) {
         Optional<SignInTransaction> transaction = BrowserSessions.takeTransaction(request);
         if (error != null) {
@@ -102,7 +102,7 @@ public class AuthResource {
     @GET
     @Path("/session")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response session() {
+    public Response session(@Context HttpServletRequest request) {
         return BrowserSessions.current(request)
             .map(session -> Response.ok(SessionResponse.from(session)).build())
             .orElseGet(() -> Response.noContent().build());
@@ -110,13 +110,17 @@ public class AuthResource {
 
     @POST
     @Path("/logout")
-    public Response logout() {
+    public Response logout(@Context HttpServletRequest request, @Context HttpHeaders headers) {
+        if (!FetchMetadata
+            .sentFromThisOrigin(request.getMethod(), headers.getHeaderString(FetchMetadata.FETCH_SITE_HEADER))) {
+            return Response.status(Response.Status.FORBIDDEN).build();
+        }
         BrowserSessions.current(request).ifPresent(sessions::signOut);
         BrowserSessions.end(request);
         return Response.noContent().build();
     }
 
-    private Optional<String> language() {
+    private static Optional<String> language(HttpHeaders headers) {
         List<Locale> accepted = headers.getAcceptableLanguages();
         return accepted.stream().map(Locale::getLanguage).filter(UI_LOCALES::contains).findFirst();
     }

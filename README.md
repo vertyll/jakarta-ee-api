@@ -27,7 +27,7 @@ Jakarta EE template REST API.
   Keycloak.
 - `KeycloakAuthenticationFilter` takes the access token from `Authorization: Bearer` or from the session (refreshing it
   when it is about to expire; refresh tokens rotate and concurrent requests share one refresh; a cross-site write gets
-  no token), verifies its signature against Keycloak's keys, the issuer, the expiry and the audience
+  no token and a cross-site logout is refused), verifies its signature against Keycloak's keys, the issuer, the expiry and the audience
   (`jakarta-ee-api`), and sets the JAX-RS `SecurityContext`. `RoleAuthorizationFilter` enforces the standard
   `@RolesAllowed`, `@PermitAll` and `@DenyAll`; a resource without one of them requires signing in.
 - The account is mirrored into MongoDB (`users`) at sign-in and on `GET /api/users/me`.

@@ -3,7 +3,6 @@ package com.vertyll.jakartaeeapi.auth;
 import java.time.Clock;
 import java.time.Duration;
 import java.util.Optional;
-import java.util.Set;
 
 import jakarta.annotation.Priority;
 import jakarta.inject.Inject;
@@ -24,10 +23,7 @@ import lombok.extern.slf4j.Slf4j;
 @Priority(Priorities.AUTHENTICATION)
 public class KeycloakAuthenticationFilter implements ContainerRequestFilter {
     private static final String BEARER_PREFIX = "Bearer ";
-    private static final String FETCH_SITE_HEADER = "Sec-Fetch-Site";
     private static final Duration REFRESH_SKEW = Duration.ofSeconds(30);
-    private static final Set<String> SAFE_METHODS = Set.of("GET", "HEAD", "OPTIONS");
-    private static final Set<String> TRUSTED_FETCH_SITES = Set.of("same-origin", "none");
 
     private final Clock clock = Clock.systemUTC();
 
@@ -59,7 +55,8 @@ public class KeycloakAuthenticationFilter implements ContainerRequestFilter {
     }
 
     private Optional<String> sessionToken(ContainerRequestContext context) {
-        if (!sentBySameOrigin(context)) {
+        if (!FetchMetadata
+            .sentFromThisOrigin(context.getMethod(), context.getHeaderString(FetchMetadata.FETCH_SITE_HEADER))) {
             return Optional.empty();
         }
         return BrowserSessions.current(request).map(this::fresh).map(AuthSession::accessToken);
@@ -81,13 +78,5 @@ public class KeycloakAuthenticationFilter implements ContainerRequestFilter {
             }
             return null;
         }
-    }
-
-    private static boolean sentBySameOrigin(ContainerRequestContext context) {
-        if (SAFE_METHODS.contains(context.getMethod())) {
-            return true;
-        }
-        String fetchSite = context.getHeaderString(FETCH_SITE_HEADER);
-        return fetchSite == null || TRUSTED_FETCH_SITES.contains(fetchSite);
     }
 }

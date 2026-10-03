@@ -3,7 +3,7 @@ plugins {
     alias(libs.plugins.liberty)
 }
 
-val sessionStore: Configuration by configurations.creating
+val sessionStore = configurations.create("sessionStore")
 
 dependencies {
     implementation(project(":modules:common"))
@@ -26,11 +26,17 @@ dependencies {
     testAnnotationProcessor(libs.lombok)
 
     sessionStore(libs.redisson)
+    if (System.getProperty("os.name").startsWith("Mac")) {
+        val arch = if (System.getProperty("os.arch") == "aarch64") "osx-aarch_64" else "osx-x86_64"
+        sessionStore(variantOf(libs.netty.resolver.dns.native.macos) { classifier(arch) })
+    }
 
     libertyRuntime(libs.openliberty.runtime)
 }
 
-val copySessionStore by tasks.registering(Copy::class) {
+val copySessionStore = tasks.register<Copy>("copySessionStore") {
+    group = "liberty"
+    description = "Copies the Redisson session store into the Liberty shared resources"
     from(sessionStore)
     into(layout.buildDirectory.dir("wlp/usr/shared/resources/redisson"))
 }

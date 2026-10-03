@@ -9,15 +9,17 @@ import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.SecurityContext;
 
+import com.vertyll.jakartaeeapi.auth.KeycloakIdentity;
 import com.vertyll.jakartaeeapi.auth.KeycloakPrincipal;
 
 @Path("/users")
 public class UserResource {
-    @Inject
-    private UserService users;
+    private final UserService users;
 
-    @Context
-    private SecurityContext security;
+    @Inject
+    public UserResource(UserService users) {
+        this.users = users;
+    }
 
     @GET
     @Path("/me")
@@ -28,10 +30,10 @@ public class UserResource {
         }
     )
     @Produces(MediaType.APPLICATION_JSON)
-    public UserAccount me() {
-        if (!(security.getUserPrincipal() instanceof KeycloakPrincipal principal)) {
+    public UserAccount me(@Context SecurityContext security) {
+        if (!(security.getUserPrincipal() instanceof KeycloakPrincipal(KeycloakIdentity identity))) {
             throw new IllegalStateException("A role check passed without a Keycloak principal");
         }
-        return users.sync(principal.identity());
+        return users.sync(identity);
     }
 }

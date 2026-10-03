@@ -35,16 +35,19 @@ class RoleAuthorizationFilterTest {
 
     static class Secured {
         void plain() {
+            throw new UnsupportedOperationException();
         }
     }
 
     @PermitAll
     static class Public {
         void open() {
+            throw new UnsupportedOperationException();
         }
 
         @RolesAllowed("ADMIN")
         void adminOnly() {
+            throw new UnsupportedOperationException();
         }
     }
 }
