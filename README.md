@@ -38,8 +38,8 @@ Jakarta EE template REST API.
 - **JWT**: a JAX-RS filter takes the access token from `Authorization: Bearer` or from the session and verifies it with
   Nimbus JOSE + JWT (Keycloak's JWKS, issuer, expiry, audience `jakarta-ee-api`); `@RolesAllowed`, `@PermitAll` and
   `@DenyAll` decide access.
-- **State**: the API is stateless: every request is authorized by the JWT alone, so any instance can serve it. The only
-  state is the browser session, and it lives in Redis, outside the application.
+- **State**: the back-end is stateless: every request is authorized by the JWT alone, so any instance can serve it. The
+  only state is the browser session, and it lives in Redis, outside the application.
 - **Token lifecycle**: access tokens live five minutes; every refresh returns a new refresh token and invalidates the
   old one, and concurrent requests of one session share a single refresh. Signing out revokes the refresh token at
   Keycloak.
