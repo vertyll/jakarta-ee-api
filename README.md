@@ -1,3 +1,13 @@
+<p align="center">
+    <img alt="" src="https://img.shields.io/badge/Java-ED8B00?style=for-the-badge&logo=openjdk&logoColor=white">
+    <img alt="" src="https://img.shields.io/badge/Jakarta_EE-F7931E?style=for-the-badge">
+    <img alt="" src="https://img.shields.io/badge/Open_Liberty-5B7CC1?style=for-the-badge">
+    <img alt="" src="https://img.shields.io/badge/MongoDB-47A248?style=for-the-badge&logo=mongodb&logoColor=white">
+    <img alt="" src="https://img.shields.io/badge/Redis-DC382D?style=for-the-badge&logo=redis&logoColor=white">
+    <img alt="" src="https://img.shields.io/badge/Keycloak-00b8e3?style=for-the-badge&logo=keycloak&logoColor=4D4D4D">
+    <img alt="" src="https://img.shields.io/badge/Gradle-02303A?style=for-the-badge&logo=gradle&logoColor=white">
+</p>
+
 ## Project Assumptions
 
 Jakarta EE template REST API.
