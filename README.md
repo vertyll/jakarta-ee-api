@@ -34,10 +34,12 @@ Jakarta EE template REST API.
 - **Pattern**: BFF. A browser signs in at `GET /api/auth/authorize` with the authorization code flow and PKCE; the
   server keeps the tokens in the HTTP session and the browser holds only the `JAKARTA_EE_API_SESSION` cookie
   (`HttpOnly`, `SameSite=Lax`, `Secure` outside local development).
-- **Session store**: Redis, through Open Liberty's session cache with Redisson, so the server holds no state of its own.
+- **Session store**: Redis, through Open Liberty's session cache with Redisson.
 - **JWT**: a JAX-RS filter takes the access token from `Authorization: Bearer` or from the session and verifies it with
   Nimbus JOSE + JWT (Keycloak's JWKS, issuer, expiry, audience `jakarta-ee-api`); `@RolesAllowed`, `@PermitAll` and
   `@DenyAll` decide access.
+- **State**: the API is stateless: every request is authorized by the JWT alone, so any instance can serve it. The only
+  state is the browser session, and it lives in Redis, outside the application.
 - **Token lifecycle**: access tokens live five minutes; every refresh returns a new refresh token and invalidates the
   old one, and concurrent requests of one session share a single refresh. Signing out revokes the refresh token at
   Keycloak.
