@@ -109,7 +109,7 @@ class KeycloakTokenClientTest {
             "http://app.test/api/auth/callback",
             "http://app.test/"
         );
-        return new KeycloakTokenClient(settings, tokens.verifier());
+        return new KeycloakTokenClient(settings, tokens.verifier(), SharedRefreshes.inProcessOnly());
     }
 
     private static void respond(HttpExchange exchange, int code, String body) throws IOException {

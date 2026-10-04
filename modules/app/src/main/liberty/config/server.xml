@@ -36,7 +36,9 @@
         <property name="mail.smtp.writetimeout" value="5000"/>
     </mailSession>
 
-    <webApplication location="jakarta-ee-api.war" contextRoot="/"/>
+    <webApplication location="jakarta-ee-api.war" contextRoot="/">
+        <classloader commonLibraryRef="sessionStoreLibrary"/>
+    </webApplication>
 
     <logging consoleFormat="SIMPLE" consoleSource="message" traceSpecification="*=info"/>
 </server>

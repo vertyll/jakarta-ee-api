@@ -10,6 +10,7 @@ dependencies {
     implementation(project(":modules:config"))
     implementation(libs.mongodb.driver.sync)
     implementation(libs.nimbus.jose.jwt)
+    compileOnly(libs.redisson)
     implementation(libs.slf4j.api)
 
     runtimeOnly(libs.logback.classic)
@@ -21,11 +22,14 @@ dependencies {
 
     testImplementation(libs.bundles.testing)
     testImplementation(libs.jakartaee.web.api)
+    testImplementation(libs.testcontainers)
+    testImplementation(libs.redisson)
     testRuntimeOnly(libs.yasson)
     testCompileOnly(libs.lombok)
     testAnnotationProcessor(libs.lombok)
 
     sessionStore(libs.redisson)
+    sessionStore(project(":modules:session-store"))
     if (System.getProperty("os.name").startsWith("Mac")) {
         val arch = if (System.getProperty("os.arch") == "aarch64") "osx-aarch_64" else "osx-x86_64"
         sessionStore(variantOf(libs.netty.resolver.dns.native.macos) { classifier(arch) })

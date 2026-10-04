@@ -44,11 +44,13 @@ public class KeycloakTokenClient {
 
     private final AuthSettings settings;
     private final TokenVerifier verifier;
+    private final SharedRefreshes sharedRefreshes;
 
     @Inject
-    public KeycloakTokenClient(AuthSettings settings, TokenVerifier verifier) {
+    public KeycloakTokenClient(AuthSettings settings, TokenVerifier verifier, SharedRefreshes sharedRefreshes) {
         this.settings = settings;
         this.verifier = verifier;
+        this.sharedRefreshes = sharedRefreshes;
     }
 
     public AuthSession exchange(String code, String codeVerifier) {
@@ -57,7 +59,7 @@ public class KeycloakTokenClient {
         form.put("code", code);
         form.put("code_verifier", codeVerifier);
         form.put("redirect_uri", settings.callbackUrl());
-        return post(form, AuthException.SIGN_IN_REJECTED);
+        return toSession(tokens(form, AuthException.SIGN_IN_REJECTED), AuthException.SIGN_IN_REJECTED);
     }
 
     public AuthSession refresh(String refreshToken) {
@@ -109,10 +111,12 @@ public class KeycloakTokenClient {
         Map<String, String> form = form();
         form.put(GRANT_TYPE, REFRESH_TOKEN);
         form.put(REFRESH_TOKEN, refreshToken);
-        return post(form, AuthException.SESSION_EXPIRED);
+        SharedRefreshes.TokenPair tokens =
+                sharedRefreshes.refresh(refreshToken, () -> tokens(form, AuthException.SESSION_EXPIRED));
+        return toSession(tokens, AuthException.SESSION_EXPIRED);
     }
 
-    private AuthSession post(Map<String, String> form, String onRejection) {
+    private SharedRefreshes.TokenPair tokens(Map<String, String> form, String onRejection) {
         HttpResponse<String> response;
         try {
             response = send(settings.endpoint("token"), form);
@@ -131,13 +135,17 @@ public class KeycloakTokenClient {
         if (accessToken == null || refreshToken == null) {
             throw AuthException.unavailable();
         }
+        return new SharedRefreshes.TokenPair(accessToken, refreshToken);
+    }
+
+    private AuthSession toSession(SharedRefreshes.TokenPair tokens, String onRejection) {
         TokenVerifier.VerifiedToken verified;
         try {
-            verified = verifier.verify(accessToken);
+            verified = verifier.verify(tokens.accessToken());
         } catch (AuthException e) {
             throw AuthException.rejected(onRejection, e);
         }
-        return new AuthSession(verified.identity(), accessToken, refreshToken, verified.expiresAt());
+        return new AuthSession(verified.identity(), tokens.accessToken(), tokens.refreshToken(), verified.expiresAt());
     }
 
     private HttpResponse<String> send(String uri, Map<String, String> form) throws IOException {
