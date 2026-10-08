@@ -278,14 +278,14 @@ subprojects {
                 "\\#",
             )
 
+            formatAnnotations()
+
             eclipse(rootProject.libs.versions.eclipse.jdt.get())
                 .configFile(
                     rootProject.file(
                         "config/formatter/eclipse-java-custom-style.xml",
                     ),
                 )
-
-            formatAnnotations()
 
             trimTrailingWhitespace()
             endWithNewline()
