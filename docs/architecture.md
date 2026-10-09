@@ -48,5 +48,7 @@ Business exceptions extend `BaseBusinessException`, which carries the key, its a
 refusals carry `errors.auth.authenticationRequired` or `errors.auth.accessDenied`. For these the server sends keys, not
 sentences, and keeps no translation catalogue: the client maps `code` and `args` to text in its own language.
 
-Two refusals do not follow that yet: a bean validation failure answers `detail: "Validation failed"` with the
-constraint messages under `errors`, and anything unexpected a `500` with an English `detail`; neither has a `code`.
+> [!WARNING]
+>
+> Two refusals do not follow that yet: a bean validation failure answers `detail: "Validation failed"` with the
+> constraint messages under `errors`, and anything unexpected a `500` with an English `detail`; neither has a `code`.

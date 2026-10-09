@@ -28,8 +28,10 @@ Keycloak imports `keycloak/realm-export.json` on its first start, with two accou
 | `admin@jakarta-ee-api.local` | `jakarta-ee-api-local` | `USER`, `ADMIN` |
 | `user@jakarta-ee-api.local`  | `jakarta-ee-api-local` | `USER`          |
 
-The realm lives in the `keycloak-data` volume afterwards, so a change to the export file only takes effect after
-`docker compose -f docker-compose.local.yml down -v`.
+> [!NOTE]
+>
+> The realm lives in the `keycloak-data` volume afterwards, so a change to the export file only takes effect after
+> `docker compose -f docker-compose.local.yml down -v`.
 
 ## Run the application
 
@@ -42,11 +44,8 @@ live in `modules/app/src/main/liberty/config/server.env` and already point at th
 to configure. The Redisson jars the session cache needs are copied into the server by the `copySessionStore` task,
 which every Liberty task runs first.
 
-| Address                                    | What                                  |
-|--------------------------------------------|---------------------------------------|
-| `http://localhost:8080/api/auth/authorize` | sign in; lands on `/api/auth/session` |
-| `http://localhost:8080/api/users/me`       | the signed-in account                 |
-| `http://localhost:8080/api/health`         | health                                |
+The API listens on `http://localhost:8080/api`. Open `/api/auth/authorize` in a browser to sign in; the session
+cookie then authorizes every call from that browser.
 
 ## Checks
 

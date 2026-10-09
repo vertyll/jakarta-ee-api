@@ -23,9 +23,9 @@ The browser holds only the `JAKARTA_EE_API_SESSION` cookie: `HttpOnly`, `SameSit
 ## Every request is authorized by a token
 
 `KeycloakAuthenticationFilter` takes the access token from `Authorization: Bearer` or, for a browser, from its session.
-`TokenVerifier` checks it with Nimbus JOSE + JWT: the signature against Keycloak's published keys, the issuer, the expiry
-and the audience (`KEYCLOAK_AUDIENCE`). The roles come from `realm_access.roles`, and the caller becomes the request's
-`SecurityContext`, which `RoleAuthorizationFilter` and `@RolesAllowed` read.
+`TokenVerifier` checks it with Nimbus JOSE + JWT: the signature against Keycloak's published keys, the issuer, the
+expiry and the audience (`KEYCLOAK_AUDIENCE`). The roles come from `realm_access.roles`, and the caller becomes the
+request's `SecurityContext`, which `RoleAuthorizationFilter` and `@RolesAllowed` read.
 
 Either way the decision rests on the token alone, so any instance can serve any request.
 
@@ -35,9 +35,12 @@ The HTTP session lives in Redis through Liberty's session cache and Redisson, un
 after ten hours without a request. Access tokens live five minutes, and the session's token is refreshed when less than
 30 seconds of it is left.
 
-Keycloak rotates refresh tokens: every refresh returns a new one and invalidates the old one, and replaying a spent one
-ends the session. Two requests of one session refreshing at once would therefore sign the user out, so a refresh runs
-once per refresh token:
+> [!IMPORTANT]
+>
+> Keycloak rotates refresh tokens: every refresh returns a new one and invalidates the old one, and replaying a spent
+> one ends the session. Two requests of one session refreshing at once would therefore sign the user out.
+
+A refresh therefore runs once per refresh token:
 
 - within one instance, `KeycloakTokenClient` lets the first request refresh and hands its result to the others;
 - across instances, `SharedRefreshes` takes a lock in Redis; the instance holding it refreshes and leaves the new tokens
