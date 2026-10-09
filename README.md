@@ -52,3 +52,9 @@ Jakarta EE template REST API.
 - NullAway for null-safety checks.
 - Error Prone for static code analysis.
 - Spotless for code formatting.
+
+## Documentation
+
+- [Development Setup](./docs/development-setup.md) – running the infrastructure, Liberty dev mode and the checks.
+- [Architecture](./docs/architecture.md) – modules, endpoints, access rules, accounts and errors.
+- [Authentication](./docs/authentication.md) – sign-in, tokens, sessions and refreshing.

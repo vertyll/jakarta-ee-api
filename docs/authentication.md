@@ -1,20 +1,73 @@
 # Authentication
 
-- **Identity provider**: Keycloak (realm `jakarta-ee-api`) owns every page that touches a credential: sign-up, sign-in,
-  email verification, password reset, two-factor authentication and acceptance of the terms of use. The application
-  never sees a password.
-- **Pattern**: BFF. A browser signs in at `GET /api/auth/authorize` with the authorization code flow and PKCE; the
-  server keeps the tokens in the HTTP session and the browser holds only the `JAKARTA_EE_API_SESSION` cookie
-  (`HttpOnly`, `SameSite=Lax`, `Secure` outside local development).
-- **Session store**: Redis, through Open Liberty's session cache with Redisson (`jakarta-ee-api:session` namespace).
-- **JWT**: a JAX-RS filter takes the access token from `Authorization: Bearer` or from the session and verifies it with
-  Nimbus JOSE + JWT (Keycloak's JWKS, issuer, expiry, audience `jakarta-ee-api`); `@RolesAllowed`, `@PermitAll` and
-  `@DenyAll` decide access.
-- **State**: the back-end is stateless: every request is authorized by the JWT alone, so any instance can serve it. The
-  only state is the browser session, and it lives in Redis, outside the application.
-- **Token lifecycle**: access tokens live five minutes; every refresh returns a new refresh token and invalidates the
-  old one, and concurrent requests of one session share a single refresh, across replicas too (a lock in Redis). Signing
-  out revokes the refresh token at Keycloak.
-- **Cross-site requests**: `SameSite=Lax` plus `Sec-Fetch-Site`, so a write or a logout sent from another site is
-  refused.
-- **Accounts**: mirrored into MongoDB at sign-in and on `GET /api/users/me`.
+The application never handles a credential. Keycloak (realm `jakarta-ee-api`) owns every page that touches one:
+sign-up, sign-in, email verification, password reset, two-factor authentication and acceptance of the terms of use.
+The application is a BFF: it runs the sign-in, keeps the tokens on the server and gives the browser only a session
+cookie.
+
+## Signing in
+
+1. The browser opens `GET /api/auth/authorize`. `BrowserSessions` stores a fresh `state` and PKCE verifier in the HTTP
+   session, and the browser is redirected to Keycloak with the challenge. Optional parameters pass through:
+   `register=true` opens the sign-up page, and `kc_action` starts one of `CONFIGURE_TOTP`, `UPDATE_PASSWORD` or
+   `delete_credential`. The `Accept-Language` header picks Keycloak's language when it is `pl` or `en`.
+2. Keycloak returns to `GET /api/auth/callback`. The application checks that the `state` is the one it issued to this
+   browser and `KeycloakTokenClient` exchanges the code with the confidential client and its secret.
+3. `SessionService` mirrors the account into MongoDB and the tokens go into the HTTP session; the browser lands on
+   `AUTH_POST_LOGIN_URL`. When the account cannot be written, the Keycloak session is ended again. Any failure redirects
+   with `?error=sign_in_failed`, and a `state` this browser was not given with `?error=state_mismatch`.
+
+The browser holds only the `JAKARTA_EE_API_SESSION` cookie: `HttpOnly`, `SameSite=Lax`, `Secure` unless
+`session_cookie_secure=false` (the local setting).
+
+## Every request is authorized by a token
+
+`KeycloakAuthenticationFilter` takes the access token from `Authorization: Bearer` or, for a browser, from its session.
+`TokenVerifier` checks it with Nimbus JOSE + JWT: the signature against Keycloak's published keys, the issuer, the expiry
+and the audience (`KEYCLOAK_AUDIENCE`). The roles come from `realm_access.roles`, and the caller becomes the request's
+`SecurityContext`, which `RoleAuthorizationFilter` and `@RolesAllowed` read.
+
+Either way the decision rests on the token alone, so any instance can serve any request.
+
+## Sessions and refreshing
+
+The HTTP session lives in Redis through Liberty's session cache and Redisson, under `jakarta-ee-api:session`, and ends
+after ten hours without a request. Access tokens live five minutes, and the session's token is refreshed when less than
+30 seconds of it is left.
+
+Keycloak rotates refresh tokens: every refresh returns a new one and invalidates the old one, and replaying a spent one
+ends the session. Two requests of one session refreshing at once would therefore sign the user out, so a refresh runs
+once per refresh token:
+
+- within one instance, `KeycloakTokenClient` lets the first request refresh and hands its result to the others;
+- across instances, `SharedRefreshes` takes a lock in Redis; the instance holding it refreshes and leaves the new tokens
+  in Redis for 30 seconds, where the others pick them up.
+
+When Keycloak refuses a refresh the session is ended, and the request goes on without a caller: a blocked account or a
+revoked session stops working within five minutes.
+
+## Signing out
+
+`POST /api/auth/logout` revokes the refresh token at Keycloak, which ends the Keycloak session, and invalidates the HTTP
+session.
+
+## Cross-site requests
+
+The cookie is `SameSite=Lax`, which keeps it off cross-site writes. `FetchMetadata` adds a second check: an unsafe
+request whose `Sec-Fetch-Site` is neither `same-origin` nor `none` is not given the session's token, and a logout from
+another site is refused with `403`. CSRF tokens are therefore not used.
+
+## Code
+
+All in `modules/app/src/main/java/com/vertyll/jakartaeeapi/auth`:
+
+| Class                          | Role                                                                |
+|--------------------------------|---------------------------------------------------------------------|
+| `AuthResource`                 | authorize, callback, session, logout                                |
+| `BrowserSessions`              | what the HTTP session holds: the sign-in in progress and the tokens |
+| `SessionService`               | sign-in with the account mirror, refresh, sign-out                  |
+| `KeycloakTokenClient`          | code exchange, refresh, revocation                                  |
+| `SharedRefreshes`              | one refresh per refresh token across instances                      |
+| `TokenVerifier`                | token verification against Keycloak's keys                          |
+| `KeycloakAuthenticationFilter` | turning a bearer token or a session into a caller                   |
+| `RoleAuthorizationFilter`      | `@PermitAll`, `@DenyAll`, `@RolesAllowed`                           |
