@@ -34,21 +34,23 @@ unique by Keycloak identifier and by email, rewritten at every sign-in and on ev
 
 ## Errors
 
-Every refusal is an RFC 9457 problem document (`application/problem+json`, `common/problem`):
+Every refusal is an RFC 9457 problem document (`application/problem+json`, `common/problem`), and none carries a
+sentence a person reads:
 
 | Field                                 | Holds                                                                |
 |---------------------------------------|----------------------------------------------------------------------|
 | `type`, `title`, `status`, `instance` | `about:blank`, the status's reason phrase, the HTTP status, the path |
-| `detail`                              | for a business or authentication error, its message key              |
-| `code`                                | the message key, e.g. `errors.auth.accessDenied`                     |
+| `code`                                | a message key, e.g. `errors.auth.accessDenied`                       |
+| `detail`                              | the same key                                                         |
 | `args`                                | the arguments of that key, in order                                  |
-| `errors`                              | in a validation error, the messages of each invalid field            |
+| `errors`                              | in a validation error, the message keys of each invalid field        |
 
-Business exceptions extend `BaseBusinessException`, which carries the key, its arguments and the status; authentication
-refusals carry `errors.auth.authenticationRequired` or `errors.auth.accessDenied`. For these the server sends keys, not
-sentences, and keeps no translation catalogue: the client maps `code` and `args` to text in its own language.
+| Refusal                       | `code`                                                                   |
+|-------------------------------|--------------------------------------------------------------------------|
+| a business exception          | the key of the `BaseBusinessException` subclass                          |
+| no caller, or the wrong roles | `errors.auth.authenticationRequired`, `errors.auth.accessDenied`         |
+| a bean validation failure     | `errors.validation.failed`; each field gets its constraint's message key |
+| an error JAX-RS raises itself | `errors.status.{status}`                                                 |
+| anything unexpected           | `errors.unexpected`, without internals                                   |
 
-> [!WARNING]
->
-> Two refusals do not follow that yet: a bean validation failure answers `detail: "Validation failed"` with the
-> constraint messages under `errors`, and anything unexpected a `500` with an English `detail`; neither has a `code`.
+The server keeps no translation catalog: the client maps `code` and `args` to text in its own language.

@@ -21,7 +21,7 @@ import lombok.extern.slf4j.Slf4j;
 @Provider
 public class ConstraintViolationExceptionMapper implements ExceptionMapper<ConstraintViolationException> {
 
-    private static final String VALIDATION_FAILED = "Validation failed";
+    private static final String VALIDATION_FAILED = "errors.validation.failed";
 
     @Context
     private UriInfo uriInfo;
@@ -30,11 +30,21 @@ public class ConstraintViolationExceptionMapper implements ExceptionMapper<Const
     public Response toResponse(ConstraintViolationException exception) {
         Map<String, List<String>> errors = new LinkedHashMap<>();
         for (ConstraintViolation<?> violation : exception.getConstraintViolations()) {
-            errors.computeIfAbsent(fieldName(violation), _ -> new ArrayList<>()).add(violation.getMessage());
+            errors.computeIfAbsent(fieldName(violation), _ -> new ArrayList<>()).add(messageKey(violation));
         }
         String path = uriInfo.getPath();
         log.warn("Validation failed at path {} with {} invalid fields", path, errors.size());
-        return Problems.response(Problems.of(Response.Status.BAD_REQUEST, VALIDATION_FAILED, path).withErrors(errors));
+        return Problems.response(
+            Problems.of(Response.Status.BAD_REQUEST, VALIDATION_FAILED, path)
+                .withCode(VALIDATION_FAILED, List.of())
+                .withErrors(errors)
+        );
+    }
+
+    private static String messageKey(ConstraintViolation<?> violation) {
+        String template = violation.getMessageTemplate();
+        return template.startsWith("{") && template.endsWith("}") ? template.substring(1, template.length() - 1)
+                : template;
     }
 
     private static String fieldName(ConstraintViolation<?> violation) {
