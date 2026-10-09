@@ -55,7 +55,8 @@ Jakarta EE template REST API.
 
 ## Documentation
 
-- [Glossary](./GLOSSARY.md) – the terms, the standards they come from, and where each is explained.
+- [Glossary](./GLOSSARY.md) – every term the docs use, and where it is explained.
+- [Standards](./STANDARDS.md) – the RFCs and specifications the code implements or depends on.
 - [Development Setup](./docs/development-setup.md) – running the infrastructure, Liberty dev mode and the checks.
 - [Architecture](./docs/architecture.md) – modules, endpoints, access rules, accounts and errors.
 - [Authentication](./docs/authentication.md) – sign-in, tokens, sessions and refreshing.
