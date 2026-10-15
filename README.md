@@ -8,13 +8,15 @@
     <img alt="" src="https://img.shields.io/badge/Gradle-02303A?style=for-the-badge&logo=gradle&logoColor=white">
 </p>
 
+# Jakarta EE API
+
 ## Project Assumptions
 
 Jakarta EE template REST API.
 
 ## Technology Stack
 
-### Back-end:
+### Back-end
 
 - Java.
 - Jakarta EE (Open Liberty).
@@ -26,7 +28,7 @@ Jakarta EE template REST API.
 - Mockito.
 - Lombok.
 
-### Authentication:
+### Authentication
 
 - **Identity provider**: Keycloak (realm `jakarta-ee-api`); the application never sees a password.
 - **Pattern**: BFF; the tokens stay in the server-side session, the browser holds only a session cookie.
@@ -34,7 +36,7 @@ Jakarta EE template REST API.
 - **JWT**: verified by a JAX-RS filter with Nimbus JOSE + JWT; `@RolesAllowed` decides access.
 - **Details**: [Authentication](docs/authentication.md).
 
-### Core back-end:
+### Core back-end
 
 - Gradle multi-module build system.
 - The application has an exception handling mechanism (RFC 9457 problem details).
@@ -43,7 +45,7 @@ Jakarta EE template REST API.
 - The application has RBAC (Role Based Access Control).
 - And many other features that can be found in the application code.
 
-### Other:
+### Other
 
 - Docker for development environment.
 - PMD for static code analysis.
