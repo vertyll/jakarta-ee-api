@@ -1,10 +1,11 @@
 package com.vertyll.jakartaeeapi.auth;
 
 import java.net.URI;
+import java.util.Comparator;
 import java.util.List;
-import java.util.Locale;
 import java.util.Optional;
 import java.util.Set;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
@@ -35,6 +36,12 @@ public class AuthResource {
     private static final String ERROR_PARAM = "error";
     private static final String SIGN_IN_FAILED = "sign_in_failed";
     private static final String STATE_MISMATCH = "state_mismatch";
+    private static final Pattern LANGUAGE = Pattern.compile("[A-Za-z]{2,8}");
+    private static final Pattern ENTRY = Pattern.compile(",");
+    private static final Pattern PARAMETER = Pattern.compile(";");
+    /** A weight as RFC 9110, 12.4.2 writes it: from 0 to 1, with at most three decimals. */
+    private static final Pattern WEIGHT = Pattern.compile("0(\\.\\d{0,3})?|1(\\.0{0,3})?");
+    private static final int MOST_LANGUAGES = 10;
     private static final Set<String> ACCOUNT_ACTIONS = Set.of("CONFIGURE_TOTP", "UPDATE_PASSWORD");
     // Keycloak removes a credential only when named by its id, and asks the person to confirm first.
     private static final Pattern DELETE_CREDENTIAL =
@@ -66,7 +73,8 @@ public class AuthResource {
             .queryParam("state", transaction.state())
             .queryParam("code_challenge", Pkce.challengeOf(transaction.codeVerifier()))
             .queryParam("code_challenge_method", Pkce.CHALLENGE_METHOD);
-        uiLocales(headers.getAcceptableLanguages()).ifPresent(languages -> uri.queryParam("ui_locales", languages));
+        uiLocales(headers.getHeaderString(HttpHeaders.ACCEPT_LANGUAGE))
+            .ifPresent(languages -> uri.queryParam("ui_locales", languages));
         if (kcAction != null && isAccountAction(kcAction)) {
             uri.queryParam("kc_action", kcAction);
         }
@@ -128,14 +136,53 @@ public class AuthResource {
         return ACCOUNT_ACTIONS.contains(action) || DELETE_CREDENTIAL.matcher(action).matches();
     }
 
-    /** The reader's languages, most preferred first; Keycloak shows the first one the realm supports. */
-    static Optional<String> uiLocales(List<Locale> accepted) {
-        String languages = accepted.stream()
-            .map(Locale::getLanguage)
-            .filter(language -> !language.isEmpty() && !"*".equals(language))
+    /**
+     * The reader's languages, most preferred first, for Keycloak, which shows the first one the realm supports.
+     * Only plain language subtags of ASCII letters pass, as sent, so nothing else reaches the redirect. A language
+     * weighted {@code q=0} is one the reader does not accept (RFC 9110, 12.4.2), and an entry whose weight cannot be
+     * read is left out.
+     */
+    static Optional<String> uiLocales(@Nullable String acceptLanguage) {
+        if (acceptLanguage == null) {
+            return Optional.empty();
+        }
+        String languages = ENTRY.splitAsStream(acceptLanguage)
+            .map(AuthResource::weighted)
+            .flatMap(Optional::stream)
+            .filter(language -> language.quality() > 0)
+            .sorted(Comparator.comparingDouble(WeightedLanguage::quality).reversed())
+            .map(WeightedLanguage::language)
             .distinct()
+            .limit(MOST_LANGUAGES)
             .collect(Collectors.joining(" "));
         return languages.isEmpty() ? Optional.empty() : Optional.of(languages);
+    }
+
+    private static Optional<WeightedLanguage> weighted(String entry) {
+        String[] parts = PARAMETER.split(entry, -1);
+        String tag = parts[0].trim();
+        String language = tag.contains("-") ? tag.substring(0, tag.indexOf('-')) : tag;
+        if (!LANGUAGE.matcher(language).matches()) {
+            return Optional.empty();
+        }
+        double quality = 1;
+        for (int i = 1; i < parts.length; i++) {
+            String parameter = parts[i].trim();
+            // A language range takes no parameter but its weight, so anything else leaves the entry out.
+            if (parameter.length() < 2 || (parameter.charAt(0) != 'q' && parameter.charAt(0) != 'Q')
+                    || parameter.charAt(1) != '=') {
+                return Optional.empty();
+            }
+            Matcher weight = WEIGHT.matcher(parameter.substring(2));
+            if (!weight.matches()) {
+                return Optional.empty();
+            }
+            quality = Double.parseDouble(weight.group());
+        }
+        return Optional.of(new WeightedLanguage(language, quality));
+    }
+
+    private record WeightedLanguage(String language, double quality) {
     }
 
     private Response redirectToApp(@Nullable String errorCode) {
