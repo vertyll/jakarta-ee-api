@@ -4,7 +4,7 @@ import java.io.Serial;
 import java.io.Serializable;
 import java.util.List;
 
-public record KeycloakIdentity(String keycloakId, String email, String firstName, String lastName, List<String> roles)
+public record KeycloakIdentity(String keycloakId, String email, String username, List<String> roles)
     implements
     Serializable {
     @Serial

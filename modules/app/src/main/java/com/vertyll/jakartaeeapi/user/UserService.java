@@ -15,14 +15,7 @@ public class UserService {
     }
 
     public UserAccount sync(KeycloakIdentity identity) {
-        return repository.save(
-            new UserAccount(
-                identity.keycloakId(),
-                identity.email(),
-                identity.firstName(),
-                identity.lastName(),
-                identity.roles()
-            )
-        );
+        return repository
+            .save(new UserAccount(identity.keycloakId(), identity.email(), identity.username(), identity.roles()));
     }
 }

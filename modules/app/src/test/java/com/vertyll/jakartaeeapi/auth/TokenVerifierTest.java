@@ -24,7 +24,7 @@ class TokenVerifierTest {
 
         assertThat(verified.identity().keycloakId()).isEqualTo(TestTokens.SUBJECT);
         assertThat(verified.identity().roles()).containsExactly("USER");
-        assertThat(verified.identity().lastName()).isEmpty();
+        assertThat(verified.identity().username()).isEqualTo("ada");
     }
 
     @Test

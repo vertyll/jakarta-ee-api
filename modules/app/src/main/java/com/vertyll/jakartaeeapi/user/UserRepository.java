@@ -22,8 +22,7 @@ public class UserRepository {
     private static final String COLLECTION = "users";
     private static final String KEYCLOAK_ID = "keycloakId";
     private static final String EMAIL = "email";
-    private static final String FIRST_NAME = "firstName";
-    private static final String LAST_NAME = "lastName";
+    private static final String USERNAME = "username";
     private static final String ROLES = "roles";
 
     private final MongoDatabase database;
@@ -37,13 +36,13 @@ public class UserRepository {
     void createIndexes() {
         collection().createIndex(Indexes.ascending(KEYCLOAK_ID), new IndexOptions().unique(true));
         collection().createIndex(Indexes.ascending(EMAIL), new IndexOptions().unique(true));
+        collection().createIndex(Indexes.ascending(USERNAME), new IndexOptions().unique(true));
     }
 
     public UserAccount save(UserAccount account) {
         Bson byId = Filters.eq(KEYCLOAK_ID, account.keycloakId());
         Document document = new Document(KEYCLOAK_ID, account.keycloakId()).append(EMAIL, account.email())
-            .append(FIRST_NAME, account.firstName())
-            .append(LAST_NAME, account.lastName())
+            .append(USERNAME, account.username())
             .append(ROLES, account.roles());
         collection().replaceOne(byId, document, new ReplaceOptions().upsert(true));
         return account;
@@ -62,8 +61,7 @@ public class UserRepository {
         return new UserAccount(
             document.getString(KEYCLOAK_ID),
             document.getString(EMAIL),
-            document.getString(FIRST_NAME),
-            document.getString(LAST_NAME),
+            document.getString(USERNAME),
             document.getList(ROLES, String.class, List.of())
         );
     }

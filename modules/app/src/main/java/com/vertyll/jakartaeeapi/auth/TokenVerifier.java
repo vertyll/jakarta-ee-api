@@ -72,7 +72,7 @@ public class TokenVerifier {
             new DefaultJWTClaimsVerifier<>(
                 audience,
                 new JWTClaimsSet.Builder().issuer(issuer).build(),
-                Set.of("sub", "exp", "email")
+                Set.of("sub", "exp", "email", "preferred_username")
             )
         );
         return jwtProcessor;
@@ -82,8 +82,7 @@ public class TokenVerifier {
         return new KeycloakIdentity(
             claims.getSubject(),
             claims.getStringClaim("email"),
-            orEmpty(claims.getStringClaim("given_name")),
-            orEmpty(claims.getStringClaim("family_name")),
+            claims.getStringClaim("preferred_username"),
             roles(claims.getClaim(REALM_ACCESS))
         );
     }
@@ -101,10 +100,6 @@ public class TokenVerifier {
             .map(String.class::cast)
             .filter(role -> !BUILT_IN_ROLES.contains(role) && !role.startsWith(DEFAULT_ROLES_PREFIX))
             .toList();
-    }
-
-    private static String orEmpty(@Nullable String value) {
-        return value == null ? "" : value;
     }
 
     public record VerifiedToken(KeycloakIdentity identity, Instant expiresAt) {

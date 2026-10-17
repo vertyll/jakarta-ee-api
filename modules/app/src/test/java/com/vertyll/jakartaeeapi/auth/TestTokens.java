@@ -42,7 +42,7 @@ final class TestTokens {
             .audience(List.of(audience, "account"))
             .subject(SUBJECT)
             .claim("email", "ada@jakarta-ee-api.local")
-            .claim("given_name", "Ada")
+            .claim("preferred_username", "ada")
             .claim("realm_access", Map.of("roles", roles))
             .issueTime(new Date())
             .expirationTime(Date.from(Instant.now().plusSeconds(300)))

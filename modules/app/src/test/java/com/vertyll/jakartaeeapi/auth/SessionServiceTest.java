@@ -16,7 +16,7 @@ import static org.mockito.Mockito.when;
 
 class SessionServiceTest {
     private static final AuthSession SESSION = new AuthSession(
-        new KeycloakIdentity("subject", "ada@jakarta-ee-api.local", "Ada", "Lovelace", List.of("USER")),
+        new KeycloakIdentity("subject", "ada@jakarta-ee-api.local", "ada", List.of("USER")),
         "access",
         "refresh",
         Instant.EPOCH
