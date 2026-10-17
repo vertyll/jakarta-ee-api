@@ -5,6 +5,8 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
 import java.util.Set;
+import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 import jakarta.annotation.security.PermitAll;
 import jakarta.inject.Inject;
@@ -33,8 +35,10 @@ public class AuthResource {
     private static final String ERROR_PARAM = "error";
     private static final String SIGN_IN_FAILED = "sign_in_failed";
     private static final String STATE_MISMATCH = "state_mismatch";
-    private static final Set<String> ALLOWED_ACTIONS = Set.of("CONFIGURE_TOTP", "UPDATE_PASSWORD", "delete_credential");
-    private static final Set<String> UI_LOCALES = Set.of("pl", "en");
+    private static final Set<String> ACCOUNT_ACTIONS = Set.of("CONFIGURE_TOTP", "UPDATE_PASSWORD");
+    // Keycloak removes a credential only when named by its id, and asks the person to confirm first.
+    private static final Pattern DELETE_CREDENTIAL =
+            Pattern.compile("delete_credential:[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}");
 
     private final SessionService sessions;
     private final AuthSettings settings;
@@ -62,8 +66,8 @@ public class AuthResource {
             .queryParam("state", transaction.state())
             .queryParam("code_challenge", Pkce.challengeOf(transaction.codeVerifier()))
             .queryParam("code_challenge_method", Pkce.CHALLENGE_METHOD);
-        language(headers).ifPresent(language -> uri.queryParam("ui_locales", language));
-        if (kcAction != null && ALLOWED_ACTIONS.contains(kcAction)) {
+        uiLocales(headers.getAcceptableLanguages()).ifPresent(languages -> uri.queryParam("ui_locales", languages));
+        if (kcAction != null && isAccountAction(kcAction)) {
             uri.queryParam("kc_action", kcAction);
         }
         if (register) {
@@ -120,9 +124,18 @@ public class AuthResource {
         return Response.noContent().build();
     }
 
-    private static Optional<String> language(HttpHeaders headers) {
-        List<Locale> accepted = headers.getAcceptableLanguages();
-        return accepted.stream().map(Locale::getLanguage).filter(UI_LOCALES::contains).findFirst();
+    static boolean isAccountAction(String action) {
+        return ACCOUNT_ACTIONS.contains(action) || DELETE_CREDENTIAL.matcher(action).matches();
+    }
+
+    /** The reader's languages, most preferred first; Keycloak shows the first one the realm supports. */
+    static Optional<String> uiLocales(List<Locale> accepted) {
+        String languages = accepted.stream()
+            .map(Locale::getLanguage)
+            .filter(language -> !language.isEmpty() && !"*".equals(language))
+            .distinct()
+            .collect(Collectors.joining(" "));
+        return languages.isEmpty() ? Optional.empty() : Optional.of(languages);
     }
 
     private Response redirectToApp(@Nullable String errorCode) {

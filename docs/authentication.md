@@ -31,7 +31,9 @@ sequenceDiagram
 1. The browser opens `GET /api/auth/authorize`. `BrowserSessions` stores a fresh `state` and PKCE verifier in the HTTP
    session, and the browser is redirected to Keycloak with the challenge. Optional parameters pass through:
    `register=true` opens the sign-up page, and `kc_action` starts one of `CONFIGURE_TOTP`, `UPDATE_PASSWORD` or
-   `delete_credential`. The `Accept-Language` header picks Keycloak's language when it is `pl` or `en`.
+   `delete_credential:<id>`, with a credential's UUID, which Keycloak asks to confirm; any other value is dropped. The
+   languages of `Accept-Language` go to Keycloak as `ui_locales`, in their order, and Keycloak shows the first one the
+   realm supports.
 2. Keycloak returns to `GET /api/auth/callback`. The application checks that the `state` is the one it issued to this
    browser and `KeycloakTokenClient` exchanges the code with the confidential client and its secret.
 3. `SessionService` mirrors the account into MongoDB and the tokens go into the HTTP session; the browser lands on
