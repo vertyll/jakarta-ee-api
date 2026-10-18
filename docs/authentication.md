@@ -104,6 +104,7 @@ All in `modules/app/src/main/java/com/vertyll/jakartaeeapi/auth`:
 | `AuthResource`                 | authorize, callback, session, logout                                |
 | `BrowserSessions`              | what the HTTP session holds: the sign-in in progress and the tokens |
 | `SessionService`               | sign-in with the account mirror, refresh, sign-out                  |
+| `SignedInAccounts`             | the account mirror a sign-in calls, kept by `user/SignedInUsers`    |
 | `KeycloakTokenClient`          | code exchange, refresh, revocation                                  |
 | `SharedRefreshes`              | one refresh per refresh token across instances                      |
 | `TokenVerifier`                | token verification against Keycloak's keys                          |

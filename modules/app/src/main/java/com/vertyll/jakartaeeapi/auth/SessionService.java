@@ -3,27 +3,25 @@ package com.vertyll.jakartaeeapi.auth;
 import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
 
-import com.vertyll.jakartaeeapi.user.UserService;
-
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Singleton
 public class SessionService {
     private final KeycloakTokenClient tokens;
-    private final UserService users;
+    private final SignedInAccounts accounts;
 
     @Inject
-    public SessionService(KeycloakTokenClient tokens, UserService users) {
+    public SessionService(KeycloakTokenClient tokens, SignedInAccounts accounts) {
         this.tokens = tokens;
-        this.users = users;
+        this.accounts = accounts;
     }
 
     public AuthSession signIn(String code, String codeVerifier) {
         AuthSession session = tokens.exchange(code, codeVerifier);
         boolean provisioned = false;
         try {
-            users.sync(session.identity());
+            accounts.signedIn(session.identity());
             provisioned = true;
         } finally {
             if (!provisioned) {

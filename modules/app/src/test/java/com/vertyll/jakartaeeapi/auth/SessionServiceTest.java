@@ -5,10 +5,9 @@ import java.util.List;
 
 import org.junit.jupiter.api.Test;
 
-import com.vertyll.jakartaeeapi.user.UserService;
-
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -23,24 +22,24 @@ class SessionServiceTest {
     );
 
     private final KeycloakTokenClient tokens = mock(KeycloakTokenClient.class);
-    private final UserService users = mock(UserService.class);
+    private final SignedInAccounts accounts = mock(SignedInAccounts.class);
 
     @Test
     void signingInProvisionsTheAccount() {
         when(tokens.exchange("code", "verifier")).thenReturn(SESSION);
 
-        new SessionService(tokens, users).signIn("code", "verifier");
+        new SessionService(tokens, accounts).signIn("code", "verifier");
 
-        verify(users).sync(SESSION.identity());
+        verify(accounts).signedIn(SESSION.identity());
         verify(tokens, never()).revoke(any());
     }
 
     @Test
     void aFailedProvisioningRevokesTheNewSession() {
         when(tokens.exchange("code", "verifier")).thenReturn(SESSION);
-        when(users.sync(any())).thenThrow(new IllegalStateException("database down"));
+        doThrow(new IllegalStateException("database down")).when(accounts).signedIn(any());
 
-        assertThatThrownBy(() -> new SessionService(tokens, users).signIn("code", "verifier"))
+        assertThatThrownBy(() -> new SessionService(tokens, accounts).signIn("code", "verifier"))
             .hasMessage("database down");
 
         verify(tokens).revoke("refresh");
