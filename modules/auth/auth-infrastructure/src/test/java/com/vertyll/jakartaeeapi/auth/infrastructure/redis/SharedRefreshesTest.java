@@ -1,5 +1,6 @@
 package com.vertyll.jakartaeeapi.auth.infrastructure.redis;
 
+import java.time.Duration;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutionException;
@@ -21,7 +22,10 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 class SharedRefreshesTest {
-    private static final GenericContainer<?> REDIS = new GenericContainer<>("redis:8-alpine").withExposedPorts(6379);
+    private static final GenericContainer<?> REDIS =
+            new GenericContainer<>("redis:8-alpine").withStartupTimeout(Duration.ofMinutes(2))
+                .withStartupAttempts(3)
+                .withExposedPorts(6379);
 
     private static RedissonClient redis;
 

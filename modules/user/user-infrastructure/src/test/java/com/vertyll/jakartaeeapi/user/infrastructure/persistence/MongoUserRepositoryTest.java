@@ -1,5 +1,6 @@
 package com.vertyll.jakartaeeapi.user.infrastructure.persistence;
 
+import java.time.Duration;
 import java.util.List;
 
 import org.junit.jupiter.api.AfterAll;
@@ -23,7 +24,9 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 class MongoUserRepositoryTest {
     private static final int MONGO_PORT = 27_017;
     private static final GenericContainer<?> MONGO =
-            new GenericContainer<>(DockerImageName.parse("mongo:8")).withExposedPorts(MONGO_PORT);
+            new GenericContainer<>(DockerImageName.parse("mongo:8")).withStartupTimeout(Duration.ofMinutes(2))
+                .withStartupAttempts(3)
+                .withExposedPorts(MONGO_PORT);
 
     private static MongoClient client;
     private MongoUserRepository repository;

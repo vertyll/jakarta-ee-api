@@ -23,10 +23,9 @@ public class AuthExceptionMapper implements ExceptionMapper<AuthException> {
     @Context
     private UriInfo uriInfo;
 
-    // The container injects the request's @Context field after construction.
     @SuppressWarnings("java:S2637")
     public AuthExceptionMapper() {
-        // The container injects the request's URI.
+        // The container injects the request's @Context field after construction.
     }
 
     AuthExceptionMapper(UriInfo uriInfo) {

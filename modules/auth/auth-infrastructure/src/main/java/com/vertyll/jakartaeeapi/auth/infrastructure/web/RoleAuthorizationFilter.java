@@ -32,10 +32,9 @@ public class RoleAuthorizationFilter implements ContainerRequestFilter {
     @Context
     private ResourceInfo resource;
 
-    // The container injects the request's @Context field after construction.
     @SuppressWarnings("java:S2637")
     public RoleAuthorizationFilter() {
-        // The container injects the matched resource.
+        // The container injects the request's @Context field after construction.
     }
 
     RoleAuthorizationFilter(ResourceInfo resource) {
