@@ -23,6 +23,9 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 /** The accounts' repository against a real MongoDB, the version the local setup runs. */
 class MongoUserRepositoryTest {
     private static final int MONGO_PORT = 27_017;
+
+    // The @AfterAll method stops the container.
+    @SuppressWarnings("resource")
     private static final GenericContainer<?> MONGO =
             new GenericContainer<>(DockerImageName.parse("mongo:8")).withStartupTimeout(Duration.ofMinutes(2))
                 .withStartupAttempts(3)
