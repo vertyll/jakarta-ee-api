@@ -3,15 +3,16 @@
 ## Modules
 
 The application is one WAR deployed on Open Liberty: a modular monolith of two modules, `auth` and `user`, each a
-hexagon in Gradle subprojects of its own, assembled by `app`.
+hexagon in Gradle subprojects of its own, assembled by `app`. Each subproject's folder bears its name, such as
+`modules/auth/auth-domain`.
 
-| Module          | Subprojects                                      | Holds                                                                               |
-|-----------------|--------------------------------------------------|-------------------------------------------------------------------------------------|
-| `auth`          | `api`, `domain`, `application`, `infrastructure` | sign-in through Keycloak, the browser's session, token verification and access      |
-| `user`          | `domain`, `application`, `infrastructure`        | the accounts mirrored from Keycloak, in MongoDB, and `GET /users/me`                |
-| `app`           | —                                                | the JAX-RS application, the health check, the legal pages and Liberty's setup       |
-| `common`        | —                                                | the RFC 9457 problem document and the exception mappers that produce it             |
-| `session-store` | —                                                | the Redisson name mapper that prefixes session keys; loaded by Liberty, not the WAR |
+| Module          | Subprojects                                                                | Holds                                                                               |
+|-----------------|----------------------------------------------------------------------------|-------------------------------------------------------------------------------------|
+| `auth`          | `auth-contracts`, `auth-domain`, `auth-application`, `auth-infrastructure` | sign-in through Keycloak, the browser's session, token verification and access      |
+| `user`          | `user-domain`, `user-application`, `user-infrastructure`                   | the accounts mirrored from Keycloak, in MongoDB, and `GET /users/me`                |
+| `app`           | —                                                                          | the JAX-RS application, the health check, the legal pages and Liberty's setup       |
+| `common`        | —                                                                          | the RFC 9457 problem document and the exception mappers that produce it             |
+| `session-store` | —                                                                          | the Redisson name mapper that prefixes session keys; loaded by Liberty, not the WAR |
 
 `session-store` is separate because Liberty's session cache loads it from a shared library next to Redisson, outside the
 application's class loader.
@@ -25,18 +26,18 @@ application's class loader.
 | `infrastructure` | the adapters: JAX-RS resources and filters, Keycloak, Redis, MongoDB, and the CDI wiring |
 
 Dependencies point inwards: `infrastructure` implements the ports of `application`, which uses `domain`. The domain and
-the application carry no CDI annotation; each module's `infrastructure/config` produces its service, so the container
-wires adapters to ports and nothing else names a concrete adapter.
+the application carry no CDI annotation; each module's `infrastructure.config` package produces its service, so the
+container wires adapters to ports and nothing else names a concrete adapter.
 
 ## Between modules
 
-`user` depends on `auth`, never the reverse, and only on `auth-api`: the person signed in (`SignedInPerson`, read from
-the request as `SignedInPrincipal`) and the port a module implements to hear of a sign-in (`SignedInAccounts`). At
+`user` depends on `auth`, never the reverse, and only on `auth-contracts`: the person signed in (`SignedInPerson`, read
+from the request as `SignedInPrincipal`) and the port a module implements to hear of a sign-in (`SignedInAccounts`). At
 every sign-in the `auth` application calls that port, and `user`'s adapter `SignedInUsers` turns it into its own use
 case, mirroring the account.
 
 The Gradle dependencies make anything else fail to compile, and `ModuleBoundariesTest` in `app` checks with ArchUnit
-that the modules form no cycle, that `user` uses no more of `auth` than its API, and that no domain or application
+that the modules form no cycle, that `user` uses no more of `auth` than its contracts, and that no domain or application
 imports an adapter or a framework.
 
 ## Routes

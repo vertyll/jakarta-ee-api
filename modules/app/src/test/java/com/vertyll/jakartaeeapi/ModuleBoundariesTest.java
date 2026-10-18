@@ -22,12 +22,12 @@ final class ModuleBoundariesTest {
             slices().matching(BASE + ".(auth|user).(**)").namingSlices("$1").should().beFreeOfCycles();
 
     @ArchTest
-    static final ArchRule USER_REACHES_AUTH_ONLY_THROUGH_ITS_API = noClasses().that()
+    static final ArchRule USER_REACHES_AUTH_ONLY_THROUGH_ITS_CONTRACTS = noClasses().that()
         .resideInAPackage(BASE + ".user..")
         .should()
         .dependOnClassesThat()
         .resideInAnyPackage(BASE + ".auth.domain..", BASE + ".auth.application..", BASE + ".auth.infrastructure..")
-        .because("a module is reached only through its API");
+        .because("a module is reached only through its contracts");
 
     @ArchTest
     static final ArchRule AUTH_KNOWS_NO_OTHER_MODULE = noClasses().that()
@@ -69,8 +69,8 @@ final class ModuleBoundariesTest {
         .because("adapters implement the application's ports, and the infrastructure wires it");
 
     @ArchTest
-    static final ArchRule THE_API_IS_PLAIN_JAVA = noClasses().that()
-        .resideInAPackage(BASE + ".auth.api..")
+    static final ArchRule THE_CONTRACTS_ARE_PLAIN_JAVA = noClasses().that()
+        .resideInAPackage(BASE + ".auth.contracts..")
         .should()
         .dependOnClassesThat()
         .resideInAnyPackage(

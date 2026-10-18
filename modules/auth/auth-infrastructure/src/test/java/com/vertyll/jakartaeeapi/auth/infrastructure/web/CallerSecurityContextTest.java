@@ -4,8 +4,8 @@ import java.util.List;
 
 import org.junit.jupiter.api.Test;
 
-import com.vertyll.jakartaeeapi.auth.api.SignedInPerson;
-import com.vertyll.jakartaeeapi.auth.api.SignedInPrincipal;
+import com.vertyll.jakartaeeapi.auth.contracts.SignedInPerson;
+import com.vertyll.jakartaeeapi.auth.contracts.SignedInPrincipal;
 
 import static org.assertj.core.api.Assertions.assertThat;
 

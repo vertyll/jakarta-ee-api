@@ -1,11 +1,11 @@
 package com.vertyll.jakartaeeapi.auth.application.service;
 
-import com.vertyll.jakartaeeapi.auth.api.SignedInAccounts;
-import com.vertyll.jakartaeeapi.auth.api.SignedInPerson;
 import com.vertyll.jakartaeeapi.auth.application.port.inbound.SessionUseCase;
 import com.vertyll.jakartaeeapi.auth.application.port.inbound.TokenAuthenticationUseCase;
 import com.vertyll.jakartaeeapi.auth.application.port.outbound.TokenEndpoint;
 import com.vertyll.jakartaeeapi.auth.application.port.outbound.TokenVerifier;
+import com.vertyll.jakartaeeapi.auth.contracts.SignedInAccounts;
+import com.vertyll.jakartaeeapi.auth.contracts.SignedInPerson;
 import com.vertyll.jakartaeeapi.auth.domain.AuthException;
 import com.vertyll.jakartaeeapi.auth.domain.AuthSession;
 import com.vertyll.jakartaeeapi.auth.domain.Identity;

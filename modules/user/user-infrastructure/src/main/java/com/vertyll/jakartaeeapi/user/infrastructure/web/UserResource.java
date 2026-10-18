@@ -9,8 +9,8 @@ import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.SecurityContext;
 
-import com.vertyll.jakartaeeapi.auth.api.SignedInPerson;
-import com.vertyll.jakartaeeapi.auth.api.SignedInPrincipal;
+import com.vertyll.jakartaeeapi.auth.contracts.SignedInPerson;
+import com.vertyll.jakartaeeapi.auth.contracts.SignedInPrincipal;
 import com.vertyll.jakartaeeapi.user.application.port.inbound.MirrorAccountUseCase;
 import com.vertyll.jakartaeeapi.user.application.port.inbound.MirrorAccountUseCase.MirrorAccountCommand;
 

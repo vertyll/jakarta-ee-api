@@ -3,8 +3,8 @@ package com.vertyll.jakartaeeapi.user.infrastructure.auth;
 import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
 
-import com.vertyll.jakartaeeapi.auth.api.SignedInAccounts;
-import com.vertyll.jakartaeeapi.auth.api.SignedInPerson;
+import com.vertyll.jakartaeeapi.auth.contracts.SignedInAccounts;
+import com.vertyll.jakartaeeapi.auth.contracts.SignedInPerson;
 import com.vertyll.jakartaeeapi.user.application.port.inbound.MirrorAccountUseCase;
 import com.vertyll.jakartaeeapi.user.application.port.inbound.MirrorAccountUseCase.MirrorAccountCommand;
 

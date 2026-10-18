@@ -4,7 +4,7 @@ import java.security.Principal;
 
 import jakarta.ws.rs.core.SecurityContext;
 
-import com.vertyll.jakartaeeapi.auth.api.SignedInPrincipal;
+import com.vertyll.jakartaeeapi.auth.contracts.SignedInPrincipal;
 
 /** The security context of a request authorized by a token: its principal, and the realm roles its token carries. */
 public record CallerSecurityContext(SignedInPrincipal principal, boolean secure) implements SecurityContext {

@@ -14,8 +14,8 @@ import jakarta.ws.rs.core.UriInfo;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 
-import com.vertyll.jakartaeeapi.auth.api.SignedInPerson;
-import com.vertyll.jakartaeeapi.auth.api.SignedInPrincipal;
+import com.vertyll.jakartaeeapi.auth.contracts.SignedInPerson;
+import com.vertyll.jakartaeeapi.auth.contracts.SignedInPrincipal;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.doReturn;

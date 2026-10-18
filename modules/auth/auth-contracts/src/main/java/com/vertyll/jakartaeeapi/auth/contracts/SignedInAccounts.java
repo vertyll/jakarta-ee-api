@@ -1,4 +1,4 @@
-package com.vertyll.jakartaeeapi.auth.api;
+package com.vertyll.jakartaeeapi.auth.contracts;
 
 /**
  * The application's own record of the people who sign in, which a sign-in brings in step with the verified token

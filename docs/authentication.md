@@ -98,22 +98,22 @@ an image holding it in `/themes`, which the Keycloak theme workflow publishes on
 
 ## Code
 
-In the `auth` module, `modules/auth`, by layer:
+In the `auth` module, `modules/auth`, by package under `com.vertyll.jakartaeeapi.auth`:
 
-| Class                                           | Role                                                                        |
-|-------------------------------------------------|-----------------------------------------------------------------------------|
-| `api/SignedInPerson`, `api/SignedInPrincipal`   | the person signed in, as other modules see them and read them               |
-| `api/SignedInAccounts`                          | the account mirror a sign-in calls, implemented by `user`'s `SignedInUsers` |
-| `domain/Identity`, `domain/AuthSession`         | who a token's holder is, and the session kept for a browser                 |
-| `domain/Pkce`, `domain/SignInTransaction`       | the PKCE transaction of a sign-in in progress                               |
-| `application/service/AuthenticationService`     | sign-in with the account mirror, refresh, sign-out, token authentication    |
-| `application/port/outbound/TokenEndpoint`       | the port for Keycloak's token endpoint                                      |
-| `application/port/outbound/TokenVerifier`       | the port for verifying an access token                                      |
-| `infrastructure/web/AuthResource`               | authorize, callback, session, logout                                        |
-| `infrastructure/web/BrowserSessions`            | what the HTTP session holds: the sign-in in progress and the tokens         |
-| `infrastructure/web/AuthenticationFilter`       | turning a bearer token or a session into a caller                           |
-| `infrastructure/web/RoleAuthorizationFilter`    | `@PermitAll`, `@DenyAll`, `@RolesAllowed`                                   |
-| `infrastructure/web/AuthExceptionMapper`        | a refused sign-in or token as `401`, an unreachable Keycloak as `503`       |
-| `infrastructure/keycloak/KeycloakTokenEndpoint` | code exchange, refresh, revocation                                          |
-| `infrastructure/keycloak/KeycloakTokenVerifier` | token verification against Keycloak's keys                                  |
-| `infrastructure/redis/SharedRefreshes`          | one refresh per refresh token across instances                              |
+| Class                                                     | Role                                                                        |
+|-----------------------------------------------------------|-----------------------------------------------------------------------------|
+| `contracts/SignedInPerson`, `contracts/SignedInPrincipal` | the person signed in, as other modules see them and read them               |
+| `contracts/SignedInAccounts`                              | the account mirror a sign-in calls, implemented by `user`'s `SignedInUsers` |
+| `domain/Identity`, `domain/AuthSession`                   | who a token's holder is, and the session kept for a browser                 |
+| `domain/Pkce`, `domain/SignInTransaction`                 | the PKCE transaction of a sign-in in progress                               |
+| `application/service/AuthenticationService`               | sign-in with the account mirror, refresh, sign-out, token authentication    |
+| `application/port/outbound/TokenEndpoint`                 | the port for Keycloak's token endpoint                                      |
+| `application/port/outbound/TokenVerifier`                 | the port for verifying an access token                                      |
+| `infrastructure/web/AuthResource`                         | authorize, callback, session, logout                                        |
+| `infrastructure/web/BrowserSessions`                      | what the HTTP session holds: the sign-in in progress and the tokens         |
+| `infrastructure/web/AuthenticationFilter`                 | turning a bearer token or a session into a caller                           |
+| `infrastructure/web/RoleAuthorizationFilter`              | `@PermitAll`, `@DenyAll`, `@RolesAllowed`                                   |
+| `infrastructure/web/AuthExceptionMapper`                  | a refused sign-in or token as `401`, an unreachable Keycloak as `503`       |
+| `infrastructure/keycloak/KeycloakTokenEndpoint`           | code exchange, refresh, revocation                                          |
+| `infrastructure/keycloak/KeycloakTokenVerifier`           | token verification against Keycloak's keys                                  |
+| `infrastructure/redis/SharedRefreshes`                    | one refresh per refresh token across instances                              |

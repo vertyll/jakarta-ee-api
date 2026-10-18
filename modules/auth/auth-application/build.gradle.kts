@@ -5,7 +5,7 @@ plugins {
 
 dependencies {
     api(project(":modules:auth:auth-domain"))
-    api(project(":modules:auth:auth-api"))
+    api(project(":modules:auth:auth-contracts"))
 
     implementation(libs.slf4j.api)
 

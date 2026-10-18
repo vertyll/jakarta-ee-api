@@ -6,8 +6,8 @@ import jakarta.ws.rs.core.SecurityContext;
 
 import org.junit.jupiter.api.Test;
 
-import com.vertyll.jakartaeeapi.auth.api.SignedInPerson;
-import com.vertyll.jakartaeeapi.auth.api.SignedInPrincipal;
+import com.vertyll.jakartaeeapi.auth.contracts.SignedInPerson;
+import com.vertyll.jakartaeeapi.auth.contracts.SignedInPrincipal;
 import com.vertyll.jakartaeeapi.user.application.port.inbound.MirrorAccountUseCase;
 import com.vertyll.jakartaeeapi.user.application.port.inbound.MirrorAccountUseCase.MirrorAccountCommand;
 import com.vertyll.jakartaeeapi.user.domain.UserAccount;

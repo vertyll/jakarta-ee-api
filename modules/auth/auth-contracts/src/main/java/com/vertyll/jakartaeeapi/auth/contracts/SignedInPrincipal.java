@@ -1,4 +1,4 @@
-package com.vertyll.jakartaeeapi.auth.api;
+package com.vertyll.jakartaeeapi.auth.contracts;
 
 import java.security.Principal;
 

@@ -4,7 +4,7 @@ import java.util.List;
 
 import org.junit.jupiter.api.Test;
 
-import com.vertyll.jakartaeeapi.auth.api.SignedInPerson;
+import com.vertyll.jakartaeeapi.auth.contracts.SignedInPerson;
 import com.vertyll.jakartaeeapi.user.application.port.inbound.MirrorAccountUseCase;
 import com.vertyll.jakartaeeapi.user.application.port.inbound.MirrorAccountUseCase.MirrorAccountCommand;
 
