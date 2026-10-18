@@ -1,4 +1,5 @@
 [versions]
+ktlint = "1.8.0"
 jacoco = "0.8.15"
 sonarqube = "7.5.0.8588"
 java = "25"

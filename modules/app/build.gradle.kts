@@ -28,12 +28,13 @@ dependencies {
     libertyRuntime(libs.openliberty.runtime)
 }
 
-val copySessionStore = tasks.register<Copy>("copySessionStore") {
-    group = "liberty"
-    description = "Copies the Redisson session store into the Liberty shared resources"
-    from(sessionStore)
-    into(layout.buildDirectory.dir("wlp/usr/shared/resources/redisson"))
-}
+val copySessionStore =
+    tasks.register<Copy>("copySessionStore") {
+        group = "liberty"
+        description = "Copies the Redisson session store into the Liberty shared resources"
+        from(sessionStore)
+        into(layout.buildDirectory.dir("wlp/usr/shared/resources/redisson"))
+    }
 
 listOf("libertyCreate", "deploy", "libertyRun", "libertyStart", "libertyDev", "libertyPackage").forEach { name ->
     tasks.matching { it.name == name }.configureEach { dependsOn(copySessionStore) }

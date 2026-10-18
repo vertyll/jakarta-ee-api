@@ -154,7 +154,10 @@ subprojects {
             option("NullAway:CustomContractAnnotations", "org.springframework.lang.Contract")
             option("NullAway:JSpecifyMode", "true")
 
-            option("NullAway:ExcludedFieldAnnotations", "lombok.Generated,jakarta.ws.rs.core.Context,jakarta.inject.Inject")
+            option(
+                "NullAway:ExcludedFieldAnnotations",
+                "lombok.Generated,jakarta.ws.rs.core.Context,jakarta.inject.Inject",
+            )
             option("NullAway:TreatGeneratedAsUnannotated", "true")
 
             option("NullAway:AcknowledgeRestrictiveAnnotations", "true")
@@ -219,6 +222,8 @@ subprojects {
                     val failed = result.failedTestCount
                     val skipped = result.skippedTestCount
                     val duration = result.endTime - result.startTime
+                    val failedMark = if (failed > 0) "$ansiRed$crossMark$ansiReset" else ""
+                    val skippedMark = if (skipped > 0) "$ansiYellow$skipMark$ansiReset" else ""
 
                     println()
                     println("$ansiBold═══════════════════════════════════════════════════════════════$ansiReset")
@@ -227,8 +232,8 @@ subprojects {
                     println()
                     println("  Total:   $ansiBold$total$ansiReset tests")
                     println("  Passed:  $ansiGreen$ansiBold$passed$ansiReset $ansiGreen$checkMark$ansiReset")
-                    println("  Failed:  $ansiRed$ansiBold$failed$ansiReset ${if (failed > 0) "$ansiRed$crossMark$ansiReset" else ""}")
-                    println("  Skipped: $ansiYellow$ansiBold$skipped$ansiReset ${if (skipped > 0) "$ansiYellow$skipMark$ansiReset" else ""}")
+                    println("  Failed:  $ansiRed$ansiBold$failed$ansiReset $failedMark")
+                    println("  Skipped: $ansiYellow$ansiBold$skipped$ansiReset $skippedMark")
                     println()
                     println("  Duration: $ansiCyan${duration}ms$ansiReset")
                     println()
@@ -293,11 +298,12 @@ subprojects {
             toggleOffOn()
         }
 
-        format("gradle") {
+        kotlinGradle {
             target(
                 "*.gradle.kts",
                 "**/*.gradle.kts",
             )
+            ktlint(rootProject.libs.versions.ktlint.get())
 
             trimTrailingWhitespace()
             leadingTabsToSpaces(4)
