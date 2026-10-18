@@ -6,27 +6,17 @@ plugins {
 val sessionStore = configurations.create("sessionStore")
 
 dependencies {
+    // The WAR assembles the modules; it holds only the JAX-RS application, the health check and Liberty's setup.
     implementation(project(":modules:common"))
-    implementation(project(":modules:config"))
-    implementation(libs.mongodb.driver.sync)
-    implementation(libs.nimbus.jose.jwt)
-    compileOnly(libs.redisson)
-    implementation(libs.slf4j.api)
+    implementation(project(":modules:auth:auth-infrastructure"))
+    implementation(project(":modules:user:user-infrastructure"))
 
     runtimeOnly(libs.logback.classic)
 
     compileOnly(libs.jakartaee.web.api)
-    compileOnly(libs.lombok)
-
-    annotationProcessor(libs.lombok)
 
     testImplementation(libs.bundles.testing)
-    testImplementation(libs.jakartaee.web.api)
-    testImplementation(libs.testcontainers)
-    testImplementation(libs.redisson)
-    testRuntimeOnly(libs.yasson)
-    testCompileOnly(libs.lombok)
-    testAnnotationProcessor(libs.lombok)
+    testImplementation(libs.archunit.junit5)
 
     sessionStore(libs.redisson)
     sessionStore(project(":modules:session-store"))

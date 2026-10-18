@@ -2,23 +2,48 @@
 
 ## Modules
 
-The application is one WAR deployed on Open Liberty, built from four Gradle modules:
+The application is one WAR deployed on Open Liberty: a modular monolith of two modules, `auth` and `user`, each a
+hexagon in Gradle subprojects of its own, assembled by `app`.
 
-| Module          | Holds                                                                               |
-|-----------------|-------------------------------------------------------------------------------------|
-| `app`           | the JAX-RS resources, authentication, users and the Liberty server configuration    |
-| `common`        | the RFC 9457 problem document and the exception mappers that produce it             |
-| `config`        | the CDI producer of the MongoDB client and database                                 |
-| `session-store` | the Redisson name mapper that prefixes session keys; loaded by Liberty, not the WAR |
+| Module          | Subprojects                                      | Holds                                                                               |
+|-----------------|--------------------------------------------------|-------------------------------------------------------------------------------------|
+| `auth`          | `api`, `domain`, `application`, `infrastructure` | sign-in through Keycloak, the browser's session, token verification and access      |
+| `user`          | `domain`, `application`, `infrastructure`        | the accounts mirrored from Keycloak, in MongoDB, and `GET /users/me`                |
+| `app`           | —                                                | the JAX-RS application, the health check, the legal pages and Liberty's setup       |
+| `common`        | —                                                | the RFC 9457 problem document and the exception mappers that produce it             |
+| `session-store` | —                                                | the Redisson name mapper that prefixes session keys; loaded by Liberty, not the WAR |
 
 `session-store` is separate because Liberty's session cache loads it from a shared library next to Redisson, outside the
 application's class loader.
 
+## Inside a module
+
+| Layer            | Holds                                                                                    |
+|------------------|------------------------------------------------------------------------------------------|
+| `domain`         | the model and its rules, such as `Identity`, `AuthSession` or `UserAccount`; plain Java  |
+| `application`    | the use cases behind inbound ports, and the outbound ports they need; plain Java         |
+| `infrastructure` | the adapters: JAX-RS resources and filters, Keycloak, Redis, MongoDB, and the CDI wiring |
+
+Dependencies point inwards: `infrastructure` implements the ports of `application`, which uses `domain`. The domain and
+the application carry no CDI annotation; each module's `infrastructure/config` produces its service, so the container
+wires adapters to ports and nothing else names a concrete adapter.
+
+## Between modules
+
+`user` depends on `auth`, never the reverse, and only on `auth-api`: the person signed in (`SignedInPerson`, read from
+the request as `SignedInPrincipal`) and the port a module implements to hear of a sign-in (`SignedInAccounts`). At
+every sign-in the `auth` application calls that port, and `user`'s adapter `SignedInUsers` turns it into its own use
+case, mirroring the account.
+
+The Gradle dependencies make anything else fail to compile, and `ModuleBoundariesTest` in `app` checks with ArchUnit
+that the modules form no cycle, that `user` uses no more of `auth` than its API, and that no domain or application
+imports an adapter or a framework.
+
 ## Routes
 
-Every path sits under `/api` (`HelloApplication`). The resources are `AuthResource` (`/auth`), `UserResource`
-(`/users`) and `HealthResource` (`/health`); the legal pages are static files in `modules/app/src/main/webapp/legal`.
-There is no OpenAPI description; the resources are the reference.
+Every path sits under `/api` (`HelloApplication`). The resources are `AuthResource` (`/auth`, in `auth`),
+`UserResource` (`/users`, in `user`) and `HealthResource` (`/health`, in `app`); the legal pages are static files in
+`modules/app/src/main/webapp/legal`. There is no OpenAPI description; the resources are the reference.
 
 ## Access is declared on the resource
 

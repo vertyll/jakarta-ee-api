@@ -35,19 +35,20 @@ sequenceDiagram
    languages of `Accept-Language` go to Keycloak as `ui_locales`, by their weight, at most ten, leaving out any weighted
    `q=0` and anything that is not a language subtag, and Keycloak shows the first one the realm supports.
 2. Keycloak returns to `GET /api/auth/callback`. The application checks that the `state` is the one it issued to this
-   browser and `KeycloakTokenClient` exchanges the code with the confidential client and its secret.
-3. `SessionService` mirrors the account into MongoDB and the tokens go into the HTTP session; the browser lands on
-   `AUTH_POST_LOGIN_URL`. When the account cannot be written, the Keycloak session is ended again. Any failure redirects
-   with `?error=sign_in_failed`, and a `state` this browser was not given with `?error=state_mismatch`.
+   browser and `KeycloakTokenEndpoint` exchanges the code with the confidential client and its secret.
+3. `AuthenticationService` verifies the access token and has the `user` module mirror the account into MongoDB, and
+   the tokens go into the HTTP session; the browser lands on `AUTH_POST_LOGIN_URL`. When the account cannot be written,
+   the Keycloak session is ended again. Any failure redirects with `?error=sign_in_failed`, and a `state` this browser
+   was not given with `?error=state_mismatch`.
 
 The browser holds only the `JAKARTA_EE_API_SESSION` cookie: `HttpOnly`, `SameSite=Lax`, `Secure` unless
 `session_cookie_secure=false` (the local setting).
 
 ## Every request is authorized by a token
 
-`KeycloakAuthenticationFilter` takes the access token from `Authorization: Bearer` or, for a browser, from its session.
-`TokenVerifier` checks it with Nimbus JOSE + JWT: the signature against Keycloak's published keys, the issuer, the
-expiry and the audience (`KEYCLOAK_AUDIENCE`). The roles come from `realm_access.roles`, and the caller becomes the
+`AuthenticationFilter` takes the access token from `Authorization: Bearer` or, for a browser, from its session.
+`KeycloakTokenVerifier` checks it with Nimbus JOSE + JWT: the signature against Keycloak's published keys, the issuer,
+the expiry and the audience (`KEYCLOAK_AUDIENCE`). The roles come from `realm_access.roles`, and the caller becomes the
 request's `SecurityContext`, which `RoleAuthorizationFilter` and `@RolesAllowed` read.
 
 Either way the decision rests on the token alone, so any instance can serve any request.
@@ -97,16 +98,22 @@ an image holding it in `/themes`, which the Keycloak theme workflow publishes on
 
 ## Code
 
-All in `modules/app/src/main/java/com/vertyll/jakartaeeapi/auth`:
+In the `auth` module, `modules/auth`, by layer:
 
-| Class                          | Role                                                                |
-|--------------------------------|---------------------------------------------------------------------|
-| `AuthResource`                 | authorize, callback, session, logout                                |
-| `BrowserSessions`              | what the HTTP session holds: the sign-in in progress and the tokens |
-| `SessionService`               | sign-in with the account mirror, refresh, sign-out                  |
-| `SignedInAccounts`             | the account mirror a sign-in calls, kept by `user/SignedInUsers`    |
-| `KeycloakTokenClient`          | code exchange, refresh, revocation                                  |
-| `SharedRefreshes`              | one refresh per refresh token across instances                      |
-| `TokenVerifier`                | token verification against Keycloak's keys                          |
-| `KeycloakAuthenticationFilter` | turning a bearer token or a session into a caller                   |
-| `RoleAuthorizationFilter`      | `@PermitAll`, `@DenyAll`, `@RolesAllowed`                           |
+| Class                                           | Role                                                                        |
+|-------------------------------------------------|-----------------------------------------------------------------------------|
+| `api/SignedInPerson`, `api/SignedInPrincipal`   | the person signed in, as other modules see them and read them               |
+| `api/SignedInAccounts`                          | the account mirror a sign-in calls, implemented by `user`'s `SignedInUsers` |
+| `domain/Identity`, `domain/AuthSession`         | who a token's holder is, and the session kept for a browser                 |
+| `domain/Pkce`, `domain/SignInTransaction`       | the PKCE transaction of a sign-in in progress                               |
+| `application/service/AuthenticationService`     | sign-in with the account mirror, refresh, sign-out, token authentication    |
+| `application/port/outbound/TokenEndpoint`       | the port for Keycloak's token endpoint                                      |
+| `application/port/outbound/TokenVerifier`       | the port for verifying an access token                                      |
+| `infrastructure/web/AuthResource`               | authorize, callback, session, logout                                        |
+| `infrastructure/web/BrowserSessions`            | what the HTTP session holds: the sign-in in progress and the tokens         |
+| `infrastructure/web/AuthenticationFilter`       | turning a bearer token or a session into a caller                           |
+| `infrastructure/web/RoleAuthorizationFilter`    | `@PermitAll`, `@DenyAll`, `@RolesAllowed`                                   |
+| `infrastructure/web/AuthExceptionMapper`        | a refused sign-in or token as `401`, an unreachable Keycloak as `503`       |
+| `infrastructure/keycloak/KeycloakTokenEndpoint` | code exchange, refresh, revocation                                          |
+| `infrastructure/keycloak/KeycloakTokenVerifier` | token verification against Keycloak's keys                                  |
+| `infrastructure/redis/SharedRefreshes`          | one refresh per refresh token across instances                              |

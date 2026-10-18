@@ -34,6 +34,8 @@ mockito = "5.24.0"
 assertj = "3.27.7"
 testcontainers = "2.0.5"
 rest-assured = "6.0.1"
+archunit = "1.5.1"
+resteasy = "7.0.5.Final"
 
 eclipse-jdt = "4.40"
 jspecify = "1.0.1"
@@ -68,6 +70,8 @@ mockito-junit = { module = "org.mockito:mockito-junit-jupiter", version.ref = "m
 assertj-core = { module = "org.assertj:assertj-core", version.ref = "assertj" }
 testcontainers = { module = "org.testcontainers:testcontainers", version.ref = "testcontainers" }
 rest-assured = { module = "io.rest-assured:rest-assured", version.ref = "rest-assured" }
+resteasy-core = { module = "org.jboss.resteasy:resteasy-core", version.ref = "resteasy" }
+archunit-junit5 = { module = "com.tngtech.archunit:archunit-junit5", version.ref = "archunit" }
 
 jspecify = { module = "org.jspecify:jspecify", version.ref = "jspecify" }
 errorprone-core = { module = "com.google.errorprone:error_prone_core", version.ref = "errorprone" }
