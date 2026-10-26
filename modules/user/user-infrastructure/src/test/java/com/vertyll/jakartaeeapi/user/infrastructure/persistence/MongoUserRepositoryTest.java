@@ -27,7 +27,7 @@ class MongoUserRepositoryTest {
     // The @AfterAll method stops the container.
     @SuppressWarnings("resource")
     private static final GenericContainer<?> MONGO =
-            new GenericContainer<>(DockerImageName.parse("mongo:8")).withStartupTimeout(Duration.ofMinutes(2))
+            new GenericContainer<>(DockerImageName.parse("mongo:9")).withStartupTimeout(Duration.ofMinutes(2))
                 .withStartupAttempts(3)
                 .withExposedPorts(MONGO_PORT);
 
