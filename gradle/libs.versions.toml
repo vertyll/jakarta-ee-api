@@ -1,6 +1,6 @@
 [versions]
 ktlint = "1.8.0"
-jacoco = "0.8.15"
+jacoco = "0.8.16"
 sonarqube = "7.5.0.8588"
 java = "25"
 pmd = "7.28.0"
