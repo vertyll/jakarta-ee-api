@@ -13,6 +13,8 @@ dependencies {
     testCompileOnly(libs.lombok)
 
     testImplementation(libs.bundles.testing)
+    testImplementation(libs.jakartaee.web.api)
+    testRuntimeOnly(libs.resteasy.core)
 
     testAnnotationProcessor(libs.lombok)
 }

@@ -27,6 +27,7 @@ import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpServer;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 class KeycloakTokenEndpointTest {
@@ -37,6 +38,7 @@ class KeycloakTokenEndpointTest {
     private final AtomicInteger tokenCalls = new AtomicInteger();
     private final AtomicInteger status = new AtomicInteger(OK);
     private final AtomicReference<String> revoked = new AtomicReference<>("");
+    private final AtomicReference<String> tokenBody = new AtomicReference<>("");
     private final AtomicBoolean slow = new AtomicBoolean();
     private final CountDownLatch entered = new CountDownLatch(1);
     private final CountDownLatch release = new CountDownLatch(1);
@@ -52,10 +54,11 @@ class KeycloakTokenEndpointTest {
             if (slow.get()) {
                 awaitQuietly(release);
             }
+            String answer = tokenBody.get();
             respond(
                 exchange,
                 status.get(),
-                "{\"access_token\":\"" + accessToken + "\",\"refresh_token\":\"refresh-2\"}"
+                answer.isEmpty() ? "{\"access_token\":\"" + accessToken + "\",\"refresh_token\":\"refresh-2\"}" : answer
             );
         });
         keycloak.createContext("/realms/jakarta-ee-api/protocol/openid-connect/logout", exchange -> {
@@ -127,6 +130,39 @@ class KeycloakTokenEndpointTest {
         status.set(SERVER_ERROR);
         assertThatThrownBy(() -> client().exchange("code", "verifier"))
             .isInstanceOfSatisfying(AuthException.class, e -> assertThat(e.isUnavailable()).isTrue());
+    }
+
+    @Test
+    void anAnswerThatIsNotJsonIsAnOutage() {
+        tokenBody.set("<html>maintenance</html>");
+
+        assertThatThrownBy(() -> client().exchange("code", "verifier"))
+            .isInstanceOfSatisfying(AuthException.class, e -> assertThat(e.isUnavailable()).isTrue());
+    }
+
+    @Test
+    void anAnswerWithoutBothTokensIsAnOutage() {
+        tokenBody.set("{\"access_token\":\"access\"}");
+
+        assertThatThrownBy(() -> client().exchange("code", "verifier"))
+            .isInstanceOfSatisfying(AuthException.class, e -> assertThat(e.isUnavailable()).isTrue());
+    }
+
+    @Test
+    void aKeycloakThatCannotBeReachedIsAnOutage() {
+        KeycloakTokenEndpoint client = client();
+        keycloak.stop(0);
+
+        assertThatThrownBy(() -> client.exchange("code", "verifier"))
+            .isInstanceOfSatisfying(AuthException.class, e -> assertThat(e.isUnavailable()).isTrue());
+    }
+
+    @Test
+    void aSessionThatCannotBeEndedForLackOfKeycloakIsOnlyLogged() {
+        KeycloakTokenEndpoint client = client();
+        keycloak.stop(0);
+
+        assertThatCode(() -> client.revoke("refresh-1")).doesNotThrowAnyException();
     }
 
     @Test
