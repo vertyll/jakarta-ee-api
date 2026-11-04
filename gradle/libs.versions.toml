@@ -6,7 +6,7 @@ java = "25"
 pmd = "7.29.0"
 errorprone-plugin = "5.2.0"
 nullaway-plugin = "3.3.0"
-spotless = "8.10.4"
+spotless = "8.11.0"
 
 spotbugs = "6.5.13"
 spotbugs-annotations = "4.10.5"
@@ -40,7 +40,7 @@ resteasy = "7.0.5.Final"
 
 eclipse-jdt = "4.41"
 jspecify = "1.0.1"
-errorprone = "2.51.0"
+errorprone = "2.52.0"
 nullaway = "0.14.3"
 
 [libraries]
