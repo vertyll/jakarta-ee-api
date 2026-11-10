@@ -40,9 +40,11 @@ Keycloak imports `keycloak/realm-export.json` on its first start, with two accou
 ```
 
 Open Liberty's dev mode builds the application, starts the server and redeploys on every change. The local settings
-live in `modules/app/src/main/liberty/config/server.env` and already point at the containers above, so there is nothing
-to configure. The Redisson jars the session cache needs are copied into the server by the `copySessionStore` task,
-which every Liberty task runs first.
+live in `modules/app/src/main/liberty/local/server.env` and already point at the containers above, so there is nothing
+to configure. They are outside `src/main/liberty/config`, which every server is built from: only a server started by
+`libertyDev`, `libertyRun` or `libertyStart` reads them, and `libertyPackage` leaves them out of the runnable jar.
+The Redisson jars the session cache needs are copied into the server by the `copySessionStore` task, which every
+Liberty task runs first.
 
 The API listens on `http://localhost:8080/api`. Open `/api/auth/authorize` in a browser to sign in; the session
 cookie then authorizes every call from that browser.
@@ -60,21 +62,24 @@ same two commands, then the Sonar analysis and the image build.
 
 ## Production
 
-The image is Open Liberty's runnable jar (`./gradlew :modules:app:libertyPackage`). A deployment sets the variables of
-`server.env` for its own environment:
+The image is Open Liberty's runnable jar (`./gradlew :modules:app:libertyPackage`), which carries no `server.env` of
+its own. A deployment sets these variables in its environment; the application reads them through MicroProfile Config,
+`KEYCLOAK_REALM_URL` as `keycloak.realm-url` and so on:
 
-| Variable                                                                 | Purpose                                        |
-|--------------------------------------------------------------------------|------------------------------------------------|
-| `MONGODB_URI`, `MONGODB_DATABASE`                                        | MongoDB                                        |
-| `REDIS_ADDRESS`, `REDIS_PASSWORD`                                        | Redis                                          |
-| `KEYCLOAK_REALM_URL`, `KEYCLOAK_CLIENT_SECRET`                           | the realm and the confidential client          |
-| `KEYCLOAK_CLIENT_ID`, `KEYCLOAK_AUDIENCE`                                | the client and the audience a token must carry |
-| `AUTH_CALLBACK_URL`, `AUTH_POST_LOGIN_URL`                               | where Keycloak returns and where it lands      |
-| `MAIL_HOST`, `MAIL_PORT`, `MAIL_FROM`                                    | the SMTP server and the sender                 |
-| `MAIL_USERNAME`, `MAIL_PASSWORD`, `MAIL_SMTP_AUTH`, `MAIL_SMTP_STARTTLS` | SMTP credentials and TLS                       |
-| `session_cookie_secure`                                                  | `true` (the default) behind HTTPS              |
+| Variable                                                                 | Purpose                                                                |
+|--------------------------------------------------------------------------|------------------------------------------------------------------------|
+| `MONGODB_URI`, `MONGODB_DATABASE`                                        | MongoDB                                                                |
+| `REDIS_ADDRESS`, `REDIS_PASSWORD`                                        | Redis                                                                  |
+| `REDIS_KEY_PREFIX`                                                       | the prefix of every key, `jakarta-ee-api` when unset                   |
+| `KEYCLOAK_REALM_URL`, `KEYCLOAK_CLIENT_SECRET`                           | the realm and the confidential client                                  |
+| `KEYCLOAK_CLIENT_ID`, `KEYCLOAK_AUDIENCE`                                | the client and the audience a token must carry                         |
+| `AUTH_CALLBACK_URL`, `AUTH_POST_LOGIN_URL`                               | where Keycloak returns and where it lands                              |
+| `MAIL_HOST`, `MAIL_PORT`, `MAIL_FROM`                                    | the SMTP server and the sender                                         |
+| `MAIL_USERNAME`, `MAIL_PASSWORD`, `MAIL_SMTP_AUTH`, `MAIL_SMTP_STARTTLS` | SMTP credentials and TLS                                               |
+| `session_cookie_secure`, `session_cookie_name`                           | `true` and `__Host-JAKARTA_EE_API_SESSION` (the defaults) behind HTTPS |
 
-`MONGODB_URI` and `MONGODB_DATABASE` are required: the application fails to start without them.
+Every variable but `REDIS_PASSWORD`, `REDIS_KEY_PREFIX` and the two cookie settings is required, and none has a
+default: the application fails to start without it rather than reaching a local address.
 
 ## Documentation checks
 

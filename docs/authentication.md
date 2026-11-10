@@ -41,8 +41,10 @@ sequenceDiagram
    the Keycloak session is ended again. Any failure redirects with `?error=sign_in_failed`, and a `state` this browser
    was not given with `?error=state_mismatch`.
 
-The browser holds only the `JAKARTA_EE_API_SESSION` cookie: `HttpOnly`, `SameSite=Lax`, `Secure` unless
-`session_cookie_secure=false` (the local setting).
+The browser holds only the session cookie, `__Host-JAKARTA_EE_API_SESSION`: `HttpOnly`, `Secure`, `SameSite=Lax`,
+`Path=/` and no `Domain`, so the browser takes it only from this host over HTTPS. The local settings, served over plain
+HTTP, set `session_cookie_secure=false` and, since the prefix requires `Secure`, `session_cookie_name` to
+`JAKARTA_EE_API_SESSION`.
 
 ## Every request is authorized by a token
 

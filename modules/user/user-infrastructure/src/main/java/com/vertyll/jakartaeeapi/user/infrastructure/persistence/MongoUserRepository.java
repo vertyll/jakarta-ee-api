@@ -1,5 +1,6 @@
 package com.vertyll.jakartaeeapi.user.infrastructure.persistence;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -36,11 +37,16 @@ public class MongoUserRepository implements UserRepository {
         this.database = database;
     }
 
+    /**
+     * One unique index per identifying field, named {@code uk_users_<field>}. MongoDB allows one index on the same
+     * keys, so an index an earlier release created on a field under another name, MongoDB's own {@code <field>_1}, is
+     * dropped first; creating an index that exists already is a no-op, so every start converges on these names.
+     */
     @PostConstruct
     void createIndexes() {
-        collection().createIndex(Indexes.ascending(KEYCLOAK_ID), new IndexOptions().unique(true));
-        collection().createIndex(Indexes.ascending(EMAIL), new IndexOptions().unique(true));
-        collection().createIndex(Indexes.ascending(USERNAME), new IndexOptions().unique(true));
+        uniqueIndex(KEYCLOAK_ID, "uk_users_keycloak_id");
+        uniqueIndex(EMAIL, "uk_users_email");
+        uniqueIndex(USERNAME, "uk_users_username");
     }
 
     @Override
@@ -57,6 +63,20 @@ public class MongoUserRepository implements UserRepository {
     public Optional<UserAccount> findByKeycloakId(String keycloakId) {
         return Optional.ofNullable(collection().find(Filters.eq(KEYCLOAK_ID, keycloakId)).first())
             .map(MongoUserRepository::toAccount);
+    }
+
+    private void uniqueIndex(String field, String name) {
+        MongoCollection<Document> users = collection();
+        Document keys = new Document(field, 1);
+        List<String> renamed = new ArrayList<>();
+        for (Document index : users.listIndexes()) {
+            String existing = index.getString("name");
+            if (keys.equals(index.get("key", Document.class)) && !name.equals(existing)) {
+                renamed.add(existing);
+            }
+        }
+        renamed.forEach(users::dropIndex);
+        users.createIndex(Indexes.ascending(field), new IndexOptions().name(name).unique(true));
     }
 
     private MongoCollection<Document> collection() {

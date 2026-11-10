@@ -10,6 +10,7 @@ dependencies {
 
     implementation(libs.mongodb.driver.sync)
     compileOnly(libs.jakartaee.web.api)
+    compileOnly(libs.microprofile.config.api)
 
     testImplementation(libs.bundles.testing)
     testImplementation(libs.jakartaee.web.api)

@@ -1,4 +1,4 @@
 singleServerConfig:
-  address: "${REDIS_ADDRESS:-redis://localhost:6379}"
+  address: "${REDIS_ADDRESS}"
   password: ${REDIS_PASSWORD:-null}
   nameMapper: !<com.vertyll.jakartaeeapi.sessionstore.PrefixNameMapper> {}

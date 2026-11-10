@@ -11,6 +11,7 @@ import java.util.function.Supplier;
 import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
 
+import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.jspecify.annotations.Nullable;
 import org.redisson.api.RBucket;
 import org.redisson.api.RedissonClient;
@@ -37,12 +38,15 @@ public class SharedRefreshes {
     private final @Nullable RedissonClient redis;
     private final String keyPrefix;
 
+    /**
+     * The keys start with {@code redis.key-prefix} ({@code REDIS_KEY_PREFIX}), {@code jakarta-ee-api} unless set, so
+     * applications sharing one store never read each other's keys.
+     */
     @Inject
-    public SharedRefreshes(RedissonClient redis) {
-        this(redis, RedisSettings.keyPrefix());
-    }
-
-    SharedRefreshes(@Nullable RedissonClient redis, String keyPrefix) {
+    public SharedRefreshes(
+        @Nullable RedissonClient redis,
+        @ConfigProperty(name = "redis.key-prefix", defaultValue = "jakarta-ee-api") String keyPrefix
+    ) {
         this.redis = redis;
         this.keyPrefix = keyPrefix;
     }

@@ -8,15 +8,18 @@
         <feature>validation-3.1</feature>
         <feature>sessionCache-1.0</feature>
         <feature>mail-2.1</feature>
+        <feature>mpConfig-3.1</feature>
     </featureManager>
 
     <variable name="http.port" defaultValue="8080"/>
+    <!-- Secure by default: a setup without TLS turns both off, as the __Host- prefix requires Secure. -->
     <variable name="session.cookie.secure" defaultValue="true"/>
+    <variable name="session.cookie.name" defaultValue="__Host-JAKARTA_EE_API_SESSION"/>
 
     <httpEndpoint id="defaultHttpEndpoint" host="*" httpPort="${http.port}" httpsPort="-1"/>
 
-    <httpSession cookieName="JAKARTA_EE_API_SESSION" cookieHttpOnly="true" cookieSecure="${session.cookie.secure}"
-                 cookieSameSite="Lax" invalidationTimeout="10h"/>
+    <httpSession cookieName="${session.cookie.name}" cookiePath="/" cookieHttpOnly="true"
+                 cookieSecure="${session.cookie.secure}" cookieSameSite="Lax" invalidationTimeout="10h"/>
 
     <library id="sessionStoreLibrary">
         <fileset dir="${shared.resource.dir}/redisson" includes="*.jar"/>

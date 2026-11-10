@@ -53,3 +53,37 @@ liberty {
     server.packageLiberty.packageName = rootProject.name
     server.packageLiberty.include = "runnable"
 }
+
+// The local settings (the containers' addresses, the local realm's client secret, cookies without TLS) live in
+// src/main/liberty/local, outside the config directory every server is built from, so the runnable jar ships none of
+// them and a deployment sets its own environment. Only a server started from Gradle on a developer's machine, by
+// libertyDev, libertyRun or libertyStart, reads them.
+val localServerEnv = layout.projectDirectory.file("src/main/liberty/local/server.env").asFile
+val serverEnv = layout.buildDirectory.file("wlp/usr/servers/${rootProject.name}/server.env")
+
+gradle.taskGraph.whenReady {
+    if (allTasks.none { it.name == "libertyPackage" }) {
+        liberty.server.serverEnvFile = localServerEnv
+    }
+}
+
+// A server a developer started earlier still holds the local settings; they are taken out before it is packaged,
+// leaving what Liberty generated itself.
+tasks.matching { it.name == "libertyPackage" }.configureEach {
+    doFirst {
+        val packaged = serverEnv.get().asFile
+        if (packaged.exists() && localServerEnv.exists()) {
+            val localNames =
+                localServerEnv
+                    .readLines()
+                    .map {
+                        it
+                            .substringBefore(
+                                '=',
+                            ).trim()
+                    }.filter { it.isNotEmpty() }
+            val kept = packaged.readLines().filterNot { it.substringBefore('=').trim() in localNames }
+            packaged.writeText(kept.joinToString(separator = "\n", postfix = if (kept.isEmpty()) "" else "\n"))
+        }
+    }
+}

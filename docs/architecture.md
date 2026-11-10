@@ -56,7 +56,12 @@ wrong roles.
 ## Accounts mirror Keycloak
 
 Keycloak owns the person: credentials, email, name and realm roles. The `users` collection in MongoDB holds a copy,
-unique by Keycloak identifier and by email, rewritten at every sign-in and on every `GET /users/me`.
+unique by Keycloak identifier, by email and by username, rewritten at every sign-in and on every `GET /users/me`. The
+unique indexes are named `uk_users_<field>` (`uk_users_keycloak_id`, `uk_users_email`, `uk_users_username`);
+`MongoUserRepository` creates them when it starts, after dropping an index an earlier release created on the same field
+under MongoDB's own name, such as `email_1`, since MongoDB allows one index on the same keys. A write is acknowledged
+once a majority of the replica set holds it, UUIDs are stored in the standard binary subtype, and connecting, choosing
+a server and reading a reply each have a timeout (`MongoProducer`).
 
 ## Errors
 

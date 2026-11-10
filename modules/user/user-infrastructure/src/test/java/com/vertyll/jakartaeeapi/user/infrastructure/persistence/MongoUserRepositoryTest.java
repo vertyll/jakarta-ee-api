@@ -1,8 +1,10 @@
 package com.vertyll.jakartaeeapi.user.infrastructure.persistence;
 
 import java.time.Duration;
+import java.util.ArrayList;
 import java.util.List;
 
+import org.bson.Document;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
@@ -15,7 +17,10 @@ import com.vertyll.jakartaeeapi.user.domain.UserAccount;
 import com.mongodb.MongoWriteException;
 import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoClients;
+import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
+import com.mongodb.client.model.IndexOptions;
+import com.mongodb.client.model.Indexes;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -37,7 +42,8 @@ class MongoUserRepositoryTest {
     @BeforeAll
     static void start() {
         MONGO.start();
-        client = MongoClients.create("mongodb://" + MONGO.getHost() + ":" + MONGO.getMappedPort(MONGO_PORT));
+        client = MongoClients
+            .create(MongoProducer.settings("mongodb://" + MONGO.getHost() + ":" + MONGO.getMappedPort(MONGO_PORT)));
     }
 
     @AfterAll
@@ -80,5 +86,26 @@ class MongoUserRepositoryTest {
         UserAccount sameEmail = new UserAccount("second", "ada@example.test", "ada-2", List.of("USER"));
 
         assertThatThrownBy(() -> repository.save(sameEmail)).isInstanceOf(MongoWriteException.class);
+    }
+
+    @Test
+    void theUniqueIndexesAreNamedAndReplaceTheOnesOfAnEarlierRelease() {
+        MongoDatabase database = client.getDatabase("users_rename_test");
+        database.drop();
+        MongoCollection<Document> users = database.getCollection("users");
+        users.createIndex(Indexes.ascending("keycloakId"), new IndexOptions().unique(true));
+        users.createIndex(Indexes.ascending("email"), new IndexOptions().unique(true));
+        users.createIndex(Indexes.ascending("username"), new IndexOptions().unique(true));
+
+        MongoUserRepository upgraded = new MongoUserRepository(database);
+        upgraded.createIndexes();
+        upgraded.createIndexes();
+
+        List<Document> indexes = new ArrayList<>();
+        users.listIndexes().forEach(indexes::add);
+        assertThat(indexes).extracting(index -> index.getString("name"))
+            .containsExactlyInAnyOrder("_id_", "uk_users_keycloak_id", "uk_users_email", "uk_users_username");
+        assertThat(indexes).filteredOn(index -> index.getString("name").startsWith("uk_"))
+            .allSatisfy(index -> assertThat(index.getBoolean("unique")).isTrue());
     }
 }

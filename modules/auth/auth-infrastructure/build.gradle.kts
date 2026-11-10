@@ -11,6 +11,7 @@ dependencies {
     implementation(libs.slf4j.api)
     compileOnly(libs.redisson)
     compileOnly(libs.jakartaee.web.api)
+    compileOnly(libs.microprofile.config.api)
 
     compileOnly(libs.lombok)
     annotationProcessor(libs.lombok)
